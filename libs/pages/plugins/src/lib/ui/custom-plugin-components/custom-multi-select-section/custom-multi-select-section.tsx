@@ -8,6 +8,7 @@ export interface CustomMultiSelectSectionProps {
   pluginKey: string;
   field: MultiSelectSectionField;
   form: FormReturnType;
+  path: string;
 }
 
 interface ItemProps extends React.ComponentPropsWithoutRef<'div'> {
@@ -57,6 +58,7 @@ export function CustomMultiSelectSection(props: CustomMultiSelectSectionProps) {
         nothingFound={props.field.nothingFound}
         maxDropdownHeight={400}
         defaultValue={getMultiSelectDefaultValue(props.field)}
+        {...props.form.getInputProps(props.path)}
       />
     </Box>
   );

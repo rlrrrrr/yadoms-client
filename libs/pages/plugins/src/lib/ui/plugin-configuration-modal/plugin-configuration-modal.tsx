@@ -14,6 +14,7 @@ import { useForm } from '@mantine/form';
 import { notifications } from '@mantine/notifications';
 import renderPluginField from '../render-plugin-field/render-plugin-field';
 import {
+  getFromInitialValuesTest,
   getInitialValues,
   PluginConfigurationSchema,
 } from '@yadoms/domain/plugins';
@@ -42,6 +43,7 @@ export function PluginConfigurationModal(props: PluginConfigurationModalProps) {
       configurationSchema: props.selectedPluginConfigurationSchema,
     })
   );
+
   useEffect(() => {
     setInitialValues(
       getInitialValues({
@@ -59,7 +61,7 @@ export function PluginConfigurationModal(props: PluginConfigurationModalProps) {
   });
 
   const onSubmit = () => {
-    console.log(form.values);
+    console.log('values on submit', form.values);
     const errorValues = Object.values(form.errors);
     if (errorValues.length === 0) {
       // handle successful form submission
@@ -69,7 +71,6 @@ export function PluginConfigurationModal(props: PluginConfigurationModalProps) {
         color: theme.colors.green[6],
       });
     } else {
-      console.log('form', form);
       // handle validation errors
       notifications.show({
         title: 'Validation error',
@@ -111,13 +112,15 @@ export function PluginConfigurationModal(props: PluginConfigurationModalProps) {
                 inputWrapperOrder={['label', 'error', 'input', 'description']}
                 withAsterisk
               />
-              {Object.entries(props.selectedPluginConfigurationSchema).map(
-                ([key, value]) =>
-                  renderPluginField({
-                    field: value,
-                    pluginKey: key,
-                    form: form,
-                  })
+              {getFromInitialValuesTest(
+                props.selectedPluginConfigurationSchema
+              ).map(({ key, path, field }) =>
+                renderPluginField({
+                  field: field,
+                  path: path,
+                  pluginKey: key,
+                  form: form,
+                })
               )}
               {renderSpacing(6)}
             </Flex>
