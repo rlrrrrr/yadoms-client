@@ -48,6 +48,15 @@ class YadomsWebSocketConnection {
   }
 
   subscribeToKeywordAcquisitions(keywords: number[], onNewAcquisition: (newAcquisition: Acquisition) => void) {
+
+    // Cleanup previous listeners
+    this._acquisitionsListeners.forEach((listeners: AcquisitionListeners[], key: number) => {
+      listeners.forEach((listener: AcquisitionListeners, listenerIndex: number) => {
+        if (listener === onNewAcquisition)
+          delete listeners[listenerIndex];
+      });
+    });
+
     keywords.forEach((keyword: number) => {
       const listeners = this._acquisitionsListeners.get(keyword);
       if (listeners === undefined)
