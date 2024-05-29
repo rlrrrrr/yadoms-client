@@ -6,13 +6,16 @@ export interface Acquisition {
   value: string;
 }
 
-type AcquisitionListeners = (newAcquisition: Acquisition) => void;
+export interface AcquisitionListener {
+  uuid: string;
+  onReceived(newAcquisition: Acquisition): void;
+}
 
 class YadomsWebSocketConnection {
 
   private _ws: WebSocket;
   private _connected: boolean = false;
-  private _acquisitionsListeners = new Map<number, AcquisitionListeners[]>();
+  private _acquisitionsListeners = new Map<number, AcquisitionListener[]>();
 
   constructor() {
     this._ws = new WebSocket('ws://127.0.0.1:8080/ws/v2'); //TODO rendre URL dynamique
@@ -39,7 +42,7 @@ class YadomsWebSocketConnection {
           date: this.parseYadomsDate(data.newAcquisition.date), keyword: data.newAcquisition.keywordId, value: data.newAcquisition.value
         };
         this._acquisitionsListeners.get(newAcquisition.keyword)?.forEach((listener) => {
-          listener(newAcquisition)
+          listener.onReceived(newAcquisition)
         })
         return;
       }
@@ -47,22 +50,22 @@ class YadomsWebSocketConnection {
     }
   }
 
-  subscribeToKeywordAcquisitions(keywords: number[], onNewAcquisition: (newAcquisition: Acquisition) => void) {
+  subscribeToKeywordAcquisitions(keywords: number[], newListener: AcquisitionListener) {
 
     // Cleanup previous listeners
-    this._acquisitionsListeners.forEach((listeners: AcquisitionListeners[], key: number) => {
-      listeners.forEach((listener: AcquisitionListeners, listenerIndex: number) => {
-        if (listener === onNewAcquisition)
-          delete listeners[listenerIndex];
+    this._acquisitionsListeners.forEach((listeners: AcquisitionListener[], key: number) => {
+      listeners.forEach((listener: AcquisitionListener, listenerIndex: number) => {
+        if (listener.uuid === newListener.uuid)
+          listeners.splice(listenerIndex, 1);
       });
     });
 
     keywords.forEach((keyword: number) => {
       const listeners = this._acquisitionsListeners.get(keyword);
       if (listeners === undefined)
-        this._acquisitionsListeners.set(keyword, [onNewAcquisition]);
+        this._acquisitionsListeners.set(keyword, [newListener]);
       else
-        listeners.push(onNewAcquisition);
+        listeners.push(newListener);
     });
 
     if (this._connected)
@@ -92,7 +95,7 @@ class YadomsWebSocketConnection {
 export type YadomsConnection = {
   connected: boolean;
   serverCurrentTime: Date | undefined;
-  subscribeToKeywordAcquisitions: (keywords: number[], onNewAcquisition: (newAcquisition: Acquisition) => void) => void;
+  subscribeToKeywordAcquisitions: (keywords: number[], onNewAcquisition: AcquisitionListener) => void;
 }
 export const YadomsConnectionContext = createContext<YadomsConnection | null>(null);
 
@@ -100,7 +103,7 @@ const YadomsConnectionContextProvider = ({ children }: any) => {
   const [connected, setConnected] = useState<boolean>(false);
   const [serverCurrentTime, setServerCurrentTime] = useState<Date>();
 
-  function subscribeToKeywordAcquisitions(keywords: number[], onNewAcquisition: (newAcquisition: Acquisition) => void): void {
+  function subscribeToKeywordAcquisitions(keywords: number[], onNewAcquisition: AcquisitionListener): void {
     ws.current?.subscribeToKeywordAcquisitions(keywords, onNewAcquisition);
   }
 

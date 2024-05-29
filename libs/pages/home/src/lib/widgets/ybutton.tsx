@@ -1,54 +1,98 @@
-import { useContext, useEffect, useState } from "react";
-import { YadomsConnectionContext, YadomsConnection, Acquisition } from 'libs/shared/src/lib/services/YadomsWebSocketConnection'
+import { Component } from "react";
+import { YadomsConnectionContext, Acquisition, AcquisitionListener } from 'libs/shared/src/lib/services/YadomsWebSocketConnection'
 import { v4 as uuidv4 } from "uuid";
 import { Button, TextInput } from '@mantine/core';
-import { WidgetsProps } from "../home"; //TODO juste nécessaire pour WidgetsProps, réduire le scope
+import { WidgetProps } from 'libs/pages/home/src/lib/widgets/Widget'
 
 
-/* eslint-disable-next-line */
-export interface KeywordLogProps extends WidgetsProps {
+export interface KeywordLogProps extends WidgetProps {
+  keywordsToListen: string
 }
 
-export function KeywordLog(props: KeywordLogProps) {
-  const { subscribeToKeywordAcquisitions } = useContext(YadomsConnectionContext) as YadomsConnection;
-  const [myAcquisitions, setMyAcquisitions] = useState<Acquisition[]>([]);
+interface KeywordLogState {
+  myAcquisitions: Acquisition[];
+  keywordsToListen: string;
+}
 
-  const [keywordsToListen, setKeywordsToListen] = useState('45, 46');
-  function parseKeywordsToListen(value: string): number[] {
+class KeywordLogAcquisitionListener implements AcquisitionListener {
+  constructor(onNewAcquisition: (newAcquisition: Acquisition) => void) {
+    this.uuid = uuidv4();
+    this.onNewAcquisition = onNewAcquisition;
+  }
+  uuid: string;
+  onReceived(newAcquisition: Acquisition): void {
+    this.onNewAcquisition(newAcquisition);
+  }
+  private onNewAcquisition: (newAcquisition: Acquisition) => void;
+}
+
+class KeywordLog extends Component<KeywordLogProps, KeywordLogState> {
+  static contextType = YadomsConnectionContext;
+  context!: React.ContextType<typeof YadomsConnectionContext>
+
+  acquisitionListener: KeywordLogAcquisitionListener;
+
+  constructor(props: KeywordLogProps) {
+    super(props);
+    console.log("KeywordLog creation #" + props.widgetId);
+
+    this.state = {
+      myAcquisitions: [],
+      keywordsToListen: props.keywordsToListen
+    };
+
+    this.acquisitionListener = new KeywordLogAcquisitionListener(this.onNewAcquisition.bind(this));
+
+    this.onNewAcquisition = this.onNewAcquisition.bind(this);
+    this.applyKeywordsToListen = this.applyKeywordsToListen.bind(this);
+    this.handleKeywordsToListenChange = this.handleKeywordsToListenChange.bind(this);
+  }
+
+  componentDidMount() {
+    this.applyKeywordsToListen();
+  }
+
+  private parseKeywordsToListen(value: string) {
     return value.split(',').map(element => {
       return parseInt(element, 10);
     });
   }
 
-  function onNewAcquisition(newAcquisition: Acquisition): void {
-    console.log("yButton #" + props.widgetId + ", kwd #" + newAcquisition.keyword + " [" + newAcquisition.date + "] = " + newAcquisition.value);
-    setMyAcquisitions(myAcquisitions => [newAcquisition, ...myAcquisitions].slice(0, 4));
+  private onNewAcquisition(newAcquisition: Acquisition) {
+    this.setState(prevState => ({
+      myAcquisitions: [newAcquisition, ...prevState.myAcquisitions].slice(0, 4)
+    }));
   }
 
-  function applyKeywordsToListen(): void {
-    subscribeToKeywordAcquisitions(parseKeywordsToListen(keywordsToListen), onNewAcquisition);
+  private applyKeywordsToListen() {
+    this.context!.subscribeToKeywordAcquisitions(
+      this.parseKeywordsToListen(this.state.keywordsToListen),
+      this.acquisitionListener);
   }
 
-  useEffect(() => {
-    applyKeywordsToListen();
-  }, []);
+  private handleKeywordsToListenChange(event: React.ChangeEvent<HTMLInputElement>) {
+    this.setState({ keywordsToListen: event.currentTarget.value });
+  }
 
-  return (
-    <div>
-      <h2>yButton #{props.widgetId}</h2>
-      <TextInput
-        data-autofocus
-        label='Select keywords to listen (comma separated)'
-        value={keywordsToListen.toString()}
-        onChange={(event) => setKeywordsToListen(event.currentTarget.value)}
-      />
-      <Button onClick={applyKeywordsToListen} type="submit">
-        Apply
-      </Button>
-      {myAcquisitions
-        .map(acq => <p key={uuidv4()}>[{acq.date.toLocaleTimeString()}] kwd #{acq.keyword} = {acq.value}</p>)}
-    </div>
-  );
+  render() {
+    return (
+      <div style={{ border: '1px solid', margin : '10px'}}>
+        <h2>yButton #{this.props.widgetId}</h2>
+        <TextInput
+          data-autofocus
+          label='Select keywords to listen (comma separated)'
+          value={this.state.keywordsToListen}
+          onChange={this.handleKeywordsToListenChange}
+        />
+        <Button onClick={this.applyKeywordsToListen} type="submit">
+          Apply
+        </Button>
+        {this.state.myAcquisitions.map(acq => (
+          <p key={uuidv4()}>[{acq.date.toLocaleTimeString()}] kwd #{acq.keyword} = {acq.value}</p>
+        ))}
+      </div>
+    );
+  }
 }
 
 export default KeywordLog;
