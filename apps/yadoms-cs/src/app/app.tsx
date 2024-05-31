@@ -15,6 +15,7 @@ export default function App() {
     useState<ColorScheme>(preferredColorScheme);
   const toggleColorScheme = (value?: ColorScheme) =>
     setColorScheme(value || (colorScheme === 'dark' ? 'light' : 'dark'));
+
   return (
     <ColorSchemeProvider
       colorScheme={colorScheme}
