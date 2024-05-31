@@ -7,7 +7,7 @@ import { Provider } from 'react-redux';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { ReactQueryDevtools } from 'react-query/devtools';
 import { store } from '@yadoms/store';
-import YadomsConnectionContextProvider from 'libs/shared/src/lib/services/YadomsWebSocketConnection'
+import { YadomsConnectionContextProvider } from '@yadoms/shared';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement

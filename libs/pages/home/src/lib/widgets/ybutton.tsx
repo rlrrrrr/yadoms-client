@@ -2,7 +2,7 @@ import { Component } from "react";
 import { YadomsConnectionContext, Acquisition, AcquisitionListener } from 'libs/shared/src/lib/services/YadomsWebSocketConnection'
 import { v4 as uuidv4 } from "uuid";
 import { Button, TextInput } from '@mantine/core';
-import { WidgetProps } from 'libs/pages/home/src/lib/widgets/Widget'
+import { WidgetProps } from "./Widget";
 
 
 export interface KeywordLogProps extends WidgetProps {

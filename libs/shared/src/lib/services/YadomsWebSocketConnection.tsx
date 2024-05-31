@@ -99,7 +99,7 @@ export type YadomsConnection = {
 }
 export const YadomsConnectionContext = createContext<YadomsConnection | null>(null);
 
-const YadomsConnectionContextProvider = ({ children }: any) => {
+export const YadomsConnectionContextProvider = ({ children }: any) => {
   const [connected, setConnected] = useState<boolean>(false);
   const [serverCurrentTime, setServerCurrentTime] = useState<Date>();
 
@@ -127,7 +127,6 @@ const YadomsConnectionContextProvider = ({ children }: any) => {
   );
 };
 
-export default YadomsConnectionContextProvider;
 
 
 
