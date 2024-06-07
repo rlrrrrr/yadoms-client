@@ -42,6 +42,7 @@
     "uuid": "^9.0.1"
   },
   "devDependencies": {
+    "@babel/preset-react": "^7.14.5",
     "@mantine/ds": "^6.0.14",
     "@nx/cypress": "16.4.0",
     "@nx/eslint-plugin": "16.4.0",

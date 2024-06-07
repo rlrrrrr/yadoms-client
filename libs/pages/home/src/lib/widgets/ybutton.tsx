@@ -7,6 +7,8 @@ import {
 import { v4 as uuidv4 } from 'uuid';
 import { Button } from '@mantine/core';
 import { WidgetProps } from './Widget';
+import { keywordsApi } from '@yadoms/domain/keywords';
+import { connect } from 'react-redux';
 
 export interface ButtonProps extends WidgetProps {
   buttonKeyword: number;
@@ -73,12 +75,16 @@ class YButton extends Component<ButtonProps, ButtonState> {
   }
 
   private onClick() {
-    console.log("Button clicked !") //TODO faire l'action quand même !
-    this.setState({
-      isPressed: !this.state.isPressed,
-    });
-  }
+    console.log("Button clicked !")
 
+    var localIsPressed = !this.state.isPressed
+
+    this.setState({
+      isPressed: localIsPressed,
+    });
+
+    keywordsApi.sendCommand(this.props.buttonKeyword, localIsPressed ? "1" : "0");
+  }
   render() {
     return (
       <div style={{ border: '1px solid', margin: '10px' }}>
@@ -91,4 +97,5 @@ class YButton extends Component<ButtonProps, ButtonState> {
   }
 }
 
-export default YButton;
+const connector = connect();
+export default connector(YButton);
