@@ -45,7 +45,7 @@ class YButton extends Component<ButtonProps, ButtonState> {
     this.state = {
       myAcquisitions: [],
       buttonKeyword: props.buttonKeyword,
-      isPressed: false
+      isPressed: false,
     };
 
     this.acquisitionListener = new ButtonStateAcquisitionListener(
@@ -75,21 +75,29 @@ class YButton extends Component<ButtonProps, ButtonState> {
   }
 
   private onClick() {
-    console.log("Button clicked !")
+    console.log('Button clicked !');
 
-    var localIsPressed = !this.state.isPressed
+    var localIsPressed = !this.state.isPressed;
 
     this.setState({
       isPressed: localIsPressed,
     });
 
-    keywordsApi.sendCommand(this.props.buttonKeyword, localIsPressed ? "1" : "0");
+    keywordsApi.sendCommand(
+      this.props.buttonKeyword,
+      localIsPressed ? '1' : '0'
+    );
   }
   render() {
     return (
       <div style={{ border: '1px solid', margin: '10px' }}>
-        <h2>Button #{this.props.widgetId} on keyword #{this.props.buttonKeyword}</h2>
-        <Button onClick={this.onClick} className={`toggle-button ${this.state.isPressed ? 'on' : 'off'}`}>
+        <h2>
+          Button #{this.props.widgetId} on keyword #{this.props.buttonKeyword}
+        </h2>
+        <Button
+          onClick={this.onClick}
+          className={`toggle-button ${this.state.isPressed ? 'on' : 'off'}`}
+        >
           Click on Me ! {this.state.isPressed ? 'ON' : 'OFF'}
         </Button>
       </div>
