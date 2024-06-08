@@ -1,6 +1,5 @@
 import { Select } from '@mantine/core';
 import React from 'react';
-import { ItemProps } from '../../plugin-configuration-modal/plugin-configuration-modal';
 import { EnumField } from '@yadoms/domain/plugins';
 import LinkifyText from '../../linkify-text/linkify-text';
 import { FormReturnType } from '../../FormReturnType';
@@ -15,27 +14,32 @@ export interface CustomEnumSelectProps {
 export function CustomEnumSelect(props: CustomEnumSelectProps) {
   return (
     <Select
+      comboboxProps={{ zIndex: 1000 }}
       label={props.field.name}
       inputWrapperOrder={['label', 'error', 'input', 'description']}
       data={getEnumValuesData(props.field)}
-      defaultValue={props.field.defaultValue?.toString()}
+      defaultValue={getDefaultValue(props.field)}
       description={<LinkifyText text={props.field.description} />}
-      {...props.form.getInputProps(props.path)}
       withAsterisk
     />
   );
 }
 
-function getEnumValuesData(field: EnumField): ItemProps[] {
-  const data: ItemProps[] = [];
-  Object.entries(field.values).map(([key, value]) => {
-    data.push({
-      value: key,
-      label: value as string,
-    });
-  });
+function getEnumValuesData(
+  field: EnumField
+): { value: string; label: string }[] {
+  return Object.entries(field.values).map(([key, value]) => ({
+    value: key,
+    label: value.toString(),
+  }));
+}
 
-  return data;
+function getDefaultValue(field: EnumField): string {
+  const defaultValue = field.defaultValue?.toString();
+  if (defaultValue === undefined) {
+    return field.value.toString();
+  }
+  return defaultValue;
 }
 
 export default CustomEnumSelect;

@@ -7,6 +7,7 @@ import {
   Flex,
   Group,
   Image,
+  MultiSelect,
   Skeleton,
   Title,
   useMantineTheme,
@@ -50,6 +51,7 @@ import {
   updatePluginsInstance,
 } from '@yadoms/domain/plugins';
 import { useAppDispatch, useAppSelector } from '@yadoms/store';
+import classes from './plugins.module.css';
 
 /* eslint-disable-next-line */
 export interface PluginsProps {}
@@ -237,6 +239,7 @@ export function Plugins(props: PluginsProps) {
       showGlobalFilter: true, //show the global filter by default
     },
     icons: faIcons,
+
     renderRowActions: ({ table, row }) => (
       <Group spacing={3} position="center">
         <ActionIcon onClick={() => handleTogglePowerRow(row)}>
@@ -250,24 +253,12 @@ export function Plugins(props: PluginsProps) {
         </ActionIcon>
       </Group>
     ),
-    renderTopToolbarCustomActions: ({ table }) => (
-      <Flex
-        sx={(theme) => ({
-          backgroundColor: theme.fn.rgba(theme.colors.blue[3], 0.2),
-          borderRadius: '4px',
-          flexDirection: 'row',
-          gap: '16px',
-          justifyContent: 'space-between',
-          padding: '24px 16px',
-          '@media max-width: 768px': {
-            flexDirection: 'column',
-          },
-        })}
-      >
+    renderTopToolbar: ({ table }) => (
+      <Flex className={classes.flex}>
         <MRT_GlobalFilterTextInput table={table} />
         <Box>
           <Button
-            leftIcon={<IconHomePlus />}
+            leftSection={<IconHomePlus />}
             onClick={() => setCreatePluginModelOpened(true)}
           >
             {t('plugins.home.create-new-plugin-btn')}

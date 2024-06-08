@@ -1,24 +1,17 @@
-import { useQuery } from 'react-query';
-import {
-  Flex,
-  Paper,
-  Title,
-  Text,
-  Box,
-  LoadingOverlay,
-  Table,
-} from '@mantine/core';
+import { Box, Flex, LoadingOverlay, Paper, Table, Title } from '@mantine/core';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { BreadCrumbs } from '@yadoms/shared';
 import { loadSystemInformations } from '../summary-api';
+import { useQuery } from '@tanstack/react-query';
 
 export function Summary() {
   const { t } = useTranslation();
 
-  const { isLoading, data } = useQuery('system-informations', () =>
-    loadSystemInformations()
-  );
+  const { isLoading, data } = useQuery({
+    queryKey: ['system-informations'],
+    queryFn: loadSystemInformations,
+  });
 
   const breadcrumbsItem = [
     { title: 'home', href: '#' },
@@ -52,7 +45,10 @@ export function Summary() {
         {t('summary.home.description')}
       </Title>
       <Box maw={'100%'} pos="relative" pt={'20px'}>
-        <LoadingOverlay visible={isLoading} overlayBlur={2} />
+        <LoadingOverlay
+          visible={isLoading}
+          overlayProps={{ radius: 'sm', blur: 2 }}
+        />
         <Paper shadow="xs" p="md">
           <Table highlightOnHover>
             <tbody>{rows}</tbody>

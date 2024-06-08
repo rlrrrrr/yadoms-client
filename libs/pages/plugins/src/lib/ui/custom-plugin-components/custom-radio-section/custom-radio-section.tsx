@@ -1,13 +1,11 @@
+import { RadioSectionField } from '@yadoms/domain/plugins';
 import { Box, Group, Radio } from '@mantine/core';
 import React, { useEffect, useState } from 'react';
-import { ItemProps } from '../../plugin-configuration-modal/plugin-configuration-modal';
-import renderPluginField from '../../render-plugin-field/render-plugin-field';
 import LinkifyText from '../../linkify-text/linkify-text';
-import {
-  getInitialValuesFromSectionFields,
-  RadioSectionField,
-} from '@yadoms/domain/plugins';
 import { FormReturnType } from '../../FormReturnType';
+import classes from '../components.module.css';
+import renderPluginField from '../../render-plugin-field/render-plugin-field';
+import { ItemProps } from '../../plugin-configuration-modal/plugin-configuration-modal';
 
 export interface CustomRadioSectionProps {
   pluginKey: string;
@@ -25,44 +23,45 @@ export function CustomRadioSection(props: CustomRadioSectionProps) {
     setSelectedOption(defaultValue);
   }, [props.field]);
 
+  function getGroupOptions() {
+    const radioSectionData = getRadioSectionData(props.field);
+    return (
+      <Group mt="xs">
+        {radioSectionData.map((itemProps) => (
+          <Radio
+            key={itemProps.value}
+            value={itemProps.value}
+            label={itemProps.label}
+          />
+        ))}
+      </Group>
+    );
+  }
+
   return (
-    <Box
-      sx={(theme) => ({
-        backgroundColor:
-          theme.colorScheme === 'dark'
-            ? theme.colors.dark[5]
-            : theme.colors.gray[1],
-        textAlign: 'left',
-        padding: theme.spacing.xs,
-        marginBottom: theme.spacing.xs,
-        marginTop: theme.spacing.xs,
-        borderRadius: theme.radius.md,
-        border: `2px dotted ${theme.colors.blue[6]}`,
-      })}
-    >
+    <Box className={classes.box}>
       <Radio.Group
         value={selectedOption}
-        onChange={(event) => setSelectedOption(event)}
+        onChange={(event) => {
+          console.log('event', event);
+          setSelectedOption(event);
+        }}
         name={props.field.name}
         label={props.field.name}
         description={<LinkifyText text={props.field.description} />}
         withAsterisk
       >
-        <Group mt="xs">{renderRadioSection(props.field)}</Group>
+        {getGroupOptions()}
       </Radio.Group>
       {props.field.content[selectedOption] && (
         <div>
-          {getInitialValuesFromSectionFields(
-            props.field.content[selectedOption].content,
-            props.path,
-            selectedOption
-          ).map(({ key, path, field }) =>
-            renderPluginField({
-              field: field,
-              form: props.form,
-              path: path,
-              pluginKey: key,
-            })
+          {Object.entries(props.field.content[selectedOption].content).map(
+            ([key, value]) =>
+              renderPluginField({
+                field: value,
+                form: props.form,
+                pluginKey: key,
+              })
           )}
         </div>
       )}
@@ -70,26 +69,17 @@ export function CustomRadioSection(props: CustomRadioSectionProps) {
   );
 }
 
-function getRadioSectionData(field: RadioSectionField): ItemProps[] {
+function getRadioSectionData(field: RadioSectionField) {
   const data: ItemProps[] = [];
-  Object.entries(field.content).map(([key, value]) => {
-    data.push({
-      value: key,
-      label: value.name,
+  if (field.content) {
+    Object.entries(field.content).map(([key, value]) => {
+      data.push({
+        value: key,
+        label: value.name,
+      });
     });
-  });
-
+  }
   return data;
-}
-
-function renderRadioSection(field: RadioSectionField) {
-  return getRadioSectionData(field).map((radioSectionData) => (
-    <Radio
-      value={radioSectionData.value}
-      label={radioSectionData.label}
-      key={radioSectionData.value}
-    />
-  ));
 }
 
 export default CustomRadioSection;
