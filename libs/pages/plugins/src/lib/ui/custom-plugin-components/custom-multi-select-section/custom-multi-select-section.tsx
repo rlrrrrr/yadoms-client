@@ -40,6 +40,7 @@ export function CustomMultiSelectSection(props: CustomMultiSelectSectionProps) {
         nothingFoundMessage={props.field.nothingFound}
         maxDropdownHeight={400}
         defaultValue={getMultiSelectDefaultValue(props.field)}
+        hidePickedOptions
       />
     </Box>
   );
