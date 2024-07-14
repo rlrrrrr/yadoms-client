@@ -45,6 +45,7 @@ export interface SectionField extends BaseField {
 
 export interface ComboSectionField extends BaseField {
   type: PluginConfigurationSchemaType.ComboSection;
+  activeSection: string;
   content: PluginSectionConfigurationSchema;
 }
 
@@ -76,7 +77,7 @@ export interface DecimalField extends BaseField {
 
 export interface MultiSelectSectionField extends BaseField {
   type: PluginConfigurationSchemaType.MultiSelectSection;
-  content: PluginMultiSelectSectionConfigurationSchema;
+  content: PluginSectionConfigurationSchema;
   nothingFound?: string;
 }
 
@@ -99,6 +100,7 @@ export type SectionType =
   | RadioSectionField
   | CheckboxSectionField
   | MultiSelectSectionField;
+
 export interface PluginConfigurationSchema {
   [key: string]: PluginConfigurationSchemaField;
 }

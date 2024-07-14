@@ -1,5 +1,4 @@
 import {
-  EnumField,
   PluginConfigurationSchema,
   PluginConfigurationSchemaField,
   PluginConfigurationSchemaType,
@@ -20,68 +19,54 @@ export const getInitialValues = (initialValues: InitialValues) => {
     configuration: getFromInitialValues(initialValues.configurationSchema),
   };
 };
+
 export const getFromInitialValues = (
-  configurationSchema:
-    | PluginConfigurationSchema
-    | PluginMultiSelectSectionConfigurationSchema
+  configurationSchema: PluginConfigurationSchema
 ): Record<string, unknown> => {
   const newInitialValues: Record<string, unknown> = {};
 
   for (const [key, field] of Object.entries(configurationSchema)) {
     let sectionKeys: string[] = [];
-    let firstSectionKey: string | undefined;
 
     switch (field.type) {
       case PluginConfigurationSchemaType.String:
-        newInitialValues[key] = field.defaultValue ?? '';
-        break;
       case PluginConfigurationSchemaType.Integer:
-        newInitialValues[key] = field.defaultValue ?? 0;
-        break;
       case PluginConfigurationSchemaType.Boolean:
-        newInitialValues[key] = field.defaultValue ?? false;
-        break;
       case PluginConfigurationSchemaType.Decimal:
-        newInitialValues[key] = field.defaultValue ?? 0.0;
-        break;
       case PluginConfigurationSchemaType.Enum:
-        newInitialValues[key] = getEnumDefaultValue(field);
+        newInitialValues[key] = {
+          ...field,
+          value: field.defaultValue ?? field.value,
+        };
         break;
       case PluginConfigurationSchemaType.Section:
         newInitialValues[key] = {
-          content: getFromInitialValues(field.content || {}),
+          ...field,
+          ...(field.content && {
+            content: getFromInitialValues(field.content),
+          }),
         };
         break;
       case PluginConfigurationSchemaType.ComboSection:
-        sectionKeys = Object.keys(field.content || {});
-        if (sectionKeys.length > 0) {
-          firstSectionKey = sectionKeys[0];
-          newInitialValues[key] = {
-            content: getFromInitialValues(field.content || {}),
-            activeSection: firstSectionKey,
-          };
-        } else {
-          newInitialValues[key] = {
-            content: getFromInitialValues(field.content || {}),
-          };
-        }
+        sectionKeys = Object.keys(field.content);
+        const firstSectionKey = sectionKeys[0];
+        newInitialValues[key] = {
+          ...field,
+          content: getFromInitialValues(field.content),
+          ...(field.activeSection ? {} : { activeSection: firstSectionKey }),
+        };
         break;
       case PluginConfigurationSchemaType.CheckboxSection:
-        sectionKeys = Object.keys(field.content || {});
-        if (sectionKeys.length > 0) {
-          newInitialValues[key] = {
-            content: getFromInitialValues(field.content || {}),
-            checkbox: field.defaultValue,
-          };
-        } else {
-          newInitialValues[key] = {
-            content: getFromInitialValues(field.content || {}),
-          };
-        }
+        newInitialValues[key] = {
+          ...field,
+          content: getFromInitialValues(field.content),
+          ...(field.defaultValue && { checkbox: field.defaultValue }),
+        };
         break;
       case PluginConfigurationSchemaType.MultiSelectSection:
         newInitialValues[key] = {
-          content: getFromInitialValues(field.content || {}),
+          ...field,
+          content: getFromInitialValues(field.content),
         };
         break;
       default:
@@ -174,10 +159,3 @@ export const getInitialValuesFromSectionFields = (
   }
   return newInitialValues;
 };
-
-function getEnumDefaultValue(field: EnumField): string {
-  if (!field.defaultValue) {
-    return Object.keys(field.values)[0];
-  }
-  return field.defaultValue.toString();
-}
