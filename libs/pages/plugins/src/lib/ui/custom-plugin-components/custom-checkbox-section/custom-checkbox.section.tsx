@@ -1,9 +1,6 @@
-import {
-  CheckboxSectionField,
-  getInitialValuesFromSectionFields,
-} from '@yadoms/domain/plugins';
+import { CheckboxSectionField, getInitialValuesFromSectionFields } from '@yadoms/domain/plugins';
 import { Box, Checkbox } from '@mantine/core';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import renderPluginField from '../../render-plugin-field/render-plugin-field';
 import LinkifyText from '../../linkify-text/linkify-text';
 import { FormReturnType } from '../../FormReturnType';

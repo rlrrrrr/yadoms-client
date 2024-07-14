@@ -18,6 +18,7 @@ import {
   getInitialValues,
   PluginConfigurationSchema,
 } from '@yadoms/domain/plugins';
+import classes from './plugin-configuration-modal.module.css';
 
 export interface PluginConfigurationModalProps {
   opened: boolean;
@@ -126,23 +127,13 @@ export function PluginConfigurationModal(props: PluginConfigurationModalProps) {
             </Flex>
 
             <Flex
+              className={classes.modalFooter}
               mih={50}
               gap="xs"
               justify="flex-end"
               align="center"
               direction="row"
               wrap="wrap"
-              sx={(theme) => ({
-                position: 'absolute',
-                bottom: 0,
-                left: 0,
-                right: 0,
-                backgroundColor:
-                  theme.colorScheme === 'dark'
-                    ? theme.colors.dark[5]
-                    : theme.colors.gray[1],
-                padding: '20px',
-              })}
             >
               <Button onClick={props.onClose} variant={'outline'}>
                 {t('plugins.modal.plugin-configuration.back')}

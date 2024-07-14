@@ -114,6 +114,7 @@ export const getFromInitialValuesTest = (
       default:
     }
   }
+  console.log('newInitialValues', newInitialValues);
   return newInitialValues;
 };
 
