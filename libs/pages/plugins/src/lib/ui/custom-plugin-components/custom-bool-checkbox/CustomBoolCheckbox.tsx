@@ -1,5 +1,5 @@
 import { Checkbox } from '@mantine/core';
-import React, { useState } from 'react';
+import React from 'react';
 import { BooleanField } from '@yadoms/domain/plugins';
 import LinkifyText from '../../linkify-text/linkify-text';
 import { FormReturnType } from '../../FormReturnType';
@@ -12,24 +12,15 @@ export interface CustomBoolCheckboxProps {
 }
 
 export function CustomBoolCheckbox(props: CustomBoolCheckboxProps) {
-  const [checked, setChecked] = useState(
-    isBoolean(props.field.defaultValue) ? props.field.defaultValue : undefined
-  );
   return (
     <Checkbox
+      key={props.form.key(props.path)}
+      {...props.form.getInputProps(props.path, { type: 'checkbox' })}
       label={props.field.name}
       description={<LinkifyText text={props.field.description} />}
-      checked={checked}
-      onChange={(event) => setChecked(event.currentTarget.checked)}
       p={2}
     />
   );
-}
-
-function isBoolean(
-  value: number | boolean | string | undefined
-): value is boolean {
-  return typeof value === 'boolean';
 }
 
 export default CustomBoolCheckbox;

@@ -102,12 +102,15 @@ export const getFromInitialValuesTest = (
       case PluginConfigurationSchemaType.Boolean:
       case PluginConfigurationSchemaType.Decimal:
       case PluginConfigurationSchemaType.Integer:
-        newInitialValues.push({ key: key, path: path, field: field });
+        newInitialValues.push({ key: key, path: `${path}.value`, field: field });
+        break;
+
+      case PluginConfigurationSchemaType.CheckboxSection:
+        newInitialValues.push({ key: key, path: `${path}.checkbox`, field: field });
         break;
       case PluginConfigurationSchemaType.Section:
       case PluginConfigurationSchemaType.ComboSection:
       case PluginConfigurationSchemaType.RadioSection:
-      case PluginConfigurationSchemaType.CheckboxSection:
       case PluginConfigurationSchemaType.MultiSelectSection:
         newInitialValues.push({ key: key, path: path, field: field });
         break;
@@ -153,7 +156,7 @@ export const getInitialValuesFromSectionFields = (
       default:
         newInitialValues.push({
           key: key,
-          path: `${parentKey}.${selectedKey}.content.${key}`,
+          path: `${parentKey}.${selectedKey}content.${key}.value`,
           field: field,
         });
     }

@@ -14,6 +14,8 @@ interface CustomTextInputProps {
 export function CustomStringInput(props: CustomTextInputProps) {
   return (
     <TextInput
+      {...props.form.getInputProps(props.path)}
+      key={props.form.key(props.path)}
       label={props.field.name}
       placeholder={props.field.name}
       description={<LinkifyText text={props.field.description} />}

@@ -19,7 +19,7 @@ export function CustomMultiSelectSection(props: CustomMultiSelectSectionProps) {
     <Group wrap="nowrap">
       <div>
         <Text>{props.field.content[option.value].name}</Text>
-        <Text size="xs" color="dimmed">
+        <Text size="xs" c="dimmed">
           {props.field.content[option.value].description}
         </Text>
       </div>

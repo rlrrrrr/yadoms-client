@@ -57,8 +57,8 @@ export function PluginConfigurationModal(props: PluginConfigurationModalProps) {
 
   const form = useForm({
     initialValues,
-    validate: (values) =>
-      validateForm(values, props.selectedPluginConfigurationSchema),
+    //validate: (values) =>
+    //  validateForm(values, props.selectedPluginConfigurationSchema),
   });
 
   const onSubmit = () => {
