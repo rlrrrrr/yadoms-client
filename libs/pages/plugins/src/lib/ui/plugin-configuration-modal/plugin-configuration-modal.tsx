@@ -45,7 +45,9 @@ export function PluginConfigurationModal(props: PluginConfigurationModalProps) {
     })
   );
 
+
   useEffect(() => {
+    console.log('initialValues', initialValues);
     setInitialValues(
       getInitialValues({
         type: props.selectedPluginType,
@@ -81,9 +83,14 @@ export function PluginConfigurationModal(props: PluginConfigurationModalProps) {
     }
   };
 
+  const handleClose = () => {
+    form.reset();
+    props.onClose();
+  };
+
   return (
     <Modal.Root
-      onClose={props.onClose}
+      onClose={handleClose}
       opened={props.opened}
       size="95%"
       zIndex={1000}
@@ -135,7 +142,7 @@ export function PluginConfigurationModal(props: PluginConfigurationModalProps) {
               direction="row"
               wrap="wrap"
             >
-              <Button onClick={props.onClose} variant={'outline'}>
+              <Button onClick={handleClose} variant={'outline'}>
                 {t('plugins.modal.plugin-configuration.back')}
               </Button>
               <Button onClick={onSubmit} type="submit">

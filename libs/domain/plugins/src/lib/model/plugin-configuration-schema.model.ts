@@ -51,6 +51,7 @@ export interface ComboSectionField extends BaseField {
 
 export interface RadioSectionField extends BaseField {
   type: PluginConfigurationSchemaType.RadioSection;
+  activeSection: string;
   content: PluginSectionConfigurationSchema;
 }
 

@@ -9,8 +9,10 @@ export interface CreateNewPluginProps {
   opened: boolean;
   onClose: () => void;
 }
+
 export function CreateNewPlugin(props: CreateNewPluginProps) {
   const [pluginSelected, setPluginSelected] = useState(false);
+
   const [openedChoosePluginModal, choosePluginModalHandlers] =
     useDisclosure(true);
   const [openedPluginConfigurationModal, pluginConfigurationModalHandlers] =
@@ -29,6 +31,7 @@ export function CreateNewPlugin(props: CreateNewPluginProps) {
   };
 
   function closePluginConfigurationModal() {
+    setPluginSelected(false);
     pluginConfigurationModalHandlers.close();
     choosePluginModalHandlers.open();
   }

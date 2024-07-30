@@ -1,4 +1,4 @@
-import { CheckboxSectionField, getInitialValuesFromSectionFields } from '@yadoms/domain/plugins';
+import { CheckboxSectionField, getNestedSectionFields } from '@yadoms/domain/plugins';
 import { Box, Checkbox } from '@mantine/core';
 import React, { useEffect, useState } from 'react';
 import renderPluginField from '../../render-plugin-field/render-plugin-field';
@@ -32,7 +32,7 @@ export function CustomCheckboxSection(props: CustomCheckboxSectionProps) {
 
       {checked && (
         <div>
-          {getInitialValuesFromSectionFields(
+          {getNestedSectionFields(
             props.field.content,
             removeCheckboxFromParentPath(props.path),
             ''

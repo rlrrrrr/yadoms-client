@@ -19,7 +19,7 @@ export function CustomSection(props: CustomSectionProps) {
     <Box className={classes.box}>
       <div key={props.pluginKey}>
         <label>{props.field.name}</label>
-        <Text fz="xs" color="dark.2">
+        <Text fz="xs" c="dark.2">
           <LinkifyText text={props.field.description} />
         </Text>
         <div style={{ marginLeft: '10px' }}>

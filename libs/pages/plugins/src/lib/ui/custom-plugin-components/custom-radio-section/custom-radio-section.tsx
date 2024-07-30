@@ -15,12 +15,15 @@ export interface CustomRadioSectionProps {
 }
 
 export function CustomRadioSection(props: CustomRadioSectionProps) {
+  console.log('CustomRadioSection path', props.path);
+  console.log('CustomRadioSection form', props.form);
   const [selectedOption, setSelectedOption] = useState('');
 
   useEffect(() => {
     const data = getRadioSectionData(props.field);
     const defaultValue = data.length > 0 ? data[0].value : '';
     setSelectedOption(defaultValue);
+    console.log('Object.entries(props.field.content[selectedOption].content)', Object.entries(props.field.content));
   }, [props.field]);
 
   function getGroupOptions() {
@@ -58,9 +61,10 @@ export function CustomRadioSection(props: CustomRadioSectionProps) {
           {Object.entries(props.field.content[selectedOption].content).map(
             ([key, value]) =>
               renderPluginField({
-                field: value,
-                form: props.form,
                 pluginKey: key,
+                field: value,
+                path: props.path,
+                form: props.form,
               })
           )}
         </div>
