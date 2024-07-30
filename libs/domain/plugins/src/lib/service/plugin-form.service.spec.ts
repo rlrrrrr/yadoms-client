@@ -3,7 +3,7 @@ import {
   PluginConfigurationSchemaType,
 } from '../model/plugin-configuration-schema.model';
 import { expect } from 'vitest';
-import { getInitialValues } from '@yadoms/domain/plugins';
+import { getInitialValues } from './plugin-form.service';
 
 describe('Plugin form store', () => {
   describe(`setup the correct form`, () => {

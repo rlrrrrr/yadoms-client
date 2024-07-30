@@ -1,4 +1,7 @@
-import { CheckboxSectionField, getNestedSectionFields } from '@yadoms/domain/plugins';
+import {
+  CheckboxSectionField,
+  getNestedSectionFields,
+} from '@yadoms/domain/plugins';
 import { Box, Checkbox } from '@mantine/core';
 import React, { useEffect, useState } from 'react';
 import renderPluginField from '../../render-plugin-field/render-plugin-field';
@@ -14,7 +17,9 @@ export interface CustomCheckboxSectionProps {
 }
 
 export function CustomCheckboxSection(props: CustomCheckboxSectionProps) {
-  const [checked, setChecked] = useState<boolean>(getValueByPath(props.form.values, props.path));
+  const [checked, setChecked] = useState<boolean>(
+    getValueByPath(props.form.values, props.path)
+  );
 
   useEffect(() => {
     const value = getValueByPath(props.form.values, props.path);
@@ -51,7 +56,7 @@ export function CustomCheckboxSection(props: CustomCheckboxSectionProps) {
 }
 
 function removeCheckboxFromParentPath(input: string): string {
-  return input.replace(".checkbox", "");
+  return input.replace('.checkbox', '');
 }
 function getValueByPath<T>(obj: T, path: string): any {
   return path.split('.').reduce((acc, part) => acc && acc[part], obj);

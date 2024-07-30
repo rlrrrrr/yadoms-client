@@ -45,7 +45,6 @@ export function PluginConfigurationModal(props: PluginConfigurationModalProps) {
     })
   );
 
-
   useEffect(() => {
     console.log('initialValues', initialValues);
     setInitialValues(
