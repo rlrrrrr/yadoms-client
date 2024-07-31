@@ -212,6 +212,13 @@ export const getNestedSectionFields = (
           field: field,
         });
         break;
+      case PluginConfigurationSchemaType.Integer:
+        newInitialValues.push({
+          key: key,
+          path: `${parentKey}.content.${key}.value`,
+          field: field,
+        });
+        break;
       default:
         newInitialValues.push({
           key: key,
