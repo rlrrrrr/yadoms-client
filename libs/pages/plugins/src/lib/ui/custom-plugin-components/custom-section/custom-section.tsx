@@ -24,17 +24,14 @@ export function CustomSection(props: CustomSectionProps) {
         <div style={{ marginLeft: '10px' }}>
           {props.field.content && (
             <div>
-              {getNestedSectionFields(
-                props.field.content,
-                props.path,
-                ''
-              ).map(({ key, path, field }) =>
-                renderPluginField({
-                  field: field,
-                  form: props.form,
-                  path: path,
-                  pluginKey: key,
-                })
+              {getNestedSectionFields(props.field.content, props.path, '').map(
+                ({ key, path, field }) =>
+                  renderPluginField({
+                    field: field,
+                    form: props.form,
+                    path: path,
+                    pluginKey: key,
+                  })
               )}
             </div>
           )}
