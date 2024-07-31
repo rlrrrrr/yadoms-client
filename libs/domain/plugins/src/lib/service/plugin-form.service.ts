@@ -184,6 +184,13 @@ export const getNestedSectionFields = (
           field: field,
         });
         break;
+      case PluginConfigurationSchemaType.Boolean:
+        newInitialValues.push({
+          key: key,
+          path: `${parentKey}.content.${key}.value`,
+          field: field,
+        });
+        break;
       case PluginConfigurationSchemaType.Enum:
         newInitialValues.push({
           key: key,
