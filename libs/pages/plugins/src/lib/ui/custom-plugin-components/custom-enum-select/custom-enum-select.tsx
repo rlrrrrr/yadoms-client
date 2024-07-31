@@ -22,6 +22,7 @@ export function CustomEnumSelect(props: CustomEnumSelectProps) {
       description={<LinkifyText text={props.field.description} />}
       withAsterisk
       allowDeselect={false}
+      onChange={(event) => props.form.setFieldValue(`${props.path}`, event)}
     />
   );
 }
