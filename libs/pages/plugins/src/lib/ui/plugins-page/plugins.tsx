@@ -7,18 +7,11 @@ import {
   Flex,
   Group,
   Image,
-  MultiSelect,
   Skeleton,
   Title,
-  useMantineTheme,
+  useMantineTheme
 } from '@mantine/core';
-import {
-  IconHomePlus,
-  IconHomeSearch,
-  IconPencil,
-  IconPower,
-  IconTrash,
-} from '@tabler/icons-react';
+import { IconHomePlus, IconHomeSearch, IconPencil, IconPower, IconTrash } from '@tabler/icons-react';
 import {
   MantineReactTable,
   MRT_ColumnDef,
@@ -27,16 +20,9 @@ import {
   MRT_Row,
   MRT_TableInstance,
   MRT_VisibilityState,
-  useMantineReactTable,
+  useMantineReactTable
 } from 'mantine-react-table';
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useReducer,
-  useRef,
-  useState,
-} from 'react';
+import React, { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import CreateNewPlugin from '../create-new-plugin/create-new-plugin';
 import { BreadCrumbs, openDeleteModal } from '@yadoms/shared';
 import { useTranslation } from 'react-i18next';
@@ -48,7 +34,7 @@ import {
   PuginsInstancesState,
   selectAllPluginsInstances,
   startStopPluginsInstance,
-  updatePluginsInstance,
+  updatePluginsInstance
 } from '@yadoms/domain/plugins';
 import { useAppDispatch, useAppSelector } from '@yadoms/store';
 import classes from './plugins.module.css';
@@ -199,7 +185,6 @@ export function Plugins(props: PluginsProps) {
   const handleDeleteRow = useCallback(
     async (row: MRT_Row<PluginsInstancesEntity>) => {
       const confirmed = await openDeleteModal();
-      console.log(confirmed);
       if (!confirmed) {
         return;
       }

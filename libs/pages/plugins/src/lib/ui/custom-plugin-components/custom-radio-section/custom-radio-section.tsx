@@ -24,10 +24,6 @@ export function CustomRadioSection(props: CustomRadioSectionProps) {
     const data = getRadioSectionData(props.field);
     const defaultValue = data.length > 0 ? data[0].value : '';
     setSelectedOption(defaultValue);
-    console.log(
-      'Object.entries(props.field.content[selectedOption].content)',
-      Object.entries(props.field.content)
-    );
   }, [props.field]);
 
   function getGroupOptions() {
@@ -50,7 +46,6 @@ export function CustomRadioSection(props: CustomRadioSectionProps) {
       <Radio.Group
         value={selectedOption}
         onChange={(event) => {
-          console.log('event', event);
           props.form.setFieldValue(`${props.path}.activeSection`, event);
           setSelectedOption(event);
         }}

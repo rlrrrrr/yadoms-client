@@ -12,8 +12,6 @@ interface CustomTextInputProps {
 }
 
 export function CustomStringInput(props: CustomTextInputProps) {
-  console.log('CustomStringInput path', props.path);
-  console.log('CustomStringInput form', props.form);
   return (
     <TextInput
       {...props.form.getInputProps(props.path)}
