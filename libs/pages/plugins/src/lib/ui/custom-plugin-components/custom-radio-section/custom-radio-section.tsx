@@ -1,4 +1,7 @@
-import { getNestedSectionFields, RadioSectionField } from '@yadoms/domain/plugins';
+import {
+  getNestedSectionFields,
+  RadioSectionField,
+} from '@yadoms/domain/plugins';
 import { Box, Group, Radio } from '@mantine/core';
 import React, { useEffect, useState } from 'react';
 import LinkifyText from '../../linkify-text/linkify-text';
@@ -63,13 +66,13 @@ export function CustomRadioSection(props: CustomRadioSectionProps) {
           {getNestedSectionFields(
             props.field.content[selectedOption].content,
             `${props.path}.content.${selectedOption}`,
-            '',
+            ''
           ).map(({ key, path, field }) =>
             renderPluginField({
               field: field,
               form: props.form,
               path: path,
-              pluginKey: key
+              pluginKey: key,
             })
           )}
         </div>
@@ -84,7 +87,7 @@ function getRadioSectionData(field: RadioSectionField) {
     Object.entries(field.content).map(([key, value]) => {
       data.push({
         value: key,
-        label: value.name
+        label: value.name,
       });
     });
   }
