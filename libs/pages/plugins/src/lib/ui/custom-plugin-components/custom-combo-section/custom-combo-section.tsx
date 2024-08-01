@@ -78,8 +78,6 @@ export function CustomComboSection(props: CustomComboSectionProps) {
         onOptionSubmit={(val) => {
           setSelectedComboSection(val);
           setValue(val);
-          console.log('combosection props.path', props.path);
-          console.log('combosection val', val);
           props.form.setFieldValue(`${props.path}.activeSection`, val);
           combobox.closeDropdown();
         }}

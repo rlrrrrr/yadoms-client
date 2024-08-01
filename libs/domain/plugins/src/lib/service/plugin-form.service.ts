@@ -177,6 +177,13 @@ export const getNestedSectionFields = (
           field: field,
         });
         break;
+      case PluginConfigurationSchemaType.RadioSection:
+        newInitialValues.push({
+          key: key,
+          path: `${parentKey}.${selectedKey}.content.${key}.content`,
+          field: field,
+        });
+        break;
       case PluginConfigurationSchemaType.Section:
         newInitialValues.push({
           key: key,

@@ -48,6 +48,7 @@ export function CustomRadioSection(props: CustomRadioSectionProps) {
         value={selectedOption}
         onChange={(event) => {
           console.log('event', event);
+          props.form.setFieldValue(`${props.path}.activeSection`, event);
           setSelectedOption(event);
         }}
         name={props.field.name}
@@ -59,14 +60,17 @@ export function CustomRadioSection(props: CustomRadioSectionProps) {
       </Radio.Group>
       {props.field.content[selectedOption] && (
         <div>
-          {getNestedSectionFields(props.field.content[selectedOption].content, props.path, '').map(
-            ({ key, path, field }) =>
-              renderPluginField({
-                field: field,
-                form: props.form,
-                path: path,
-                pluginKey: key,
-              })
+          {getNestedSectionFields(
+            props.field.content[selectedOption].content,
+            `${props.path}.content.${selectedOption}`,
+            '',
+          ).map(({ key, path, field }) =>
+            renderPluginField({
+              field: field,
+              form: props.form,
+              path: path,
+              pluginKey: key
+            })
           )}
         </div>
       )}
@@ -80,7 +84,7 @@ function getRadioSectionData(field: RadioSectionField) {
     Object.entries(field.content).map(([key, value]) => {
       data.push({
         value: key,
-        label: value.name,
+        label: value.name
       });
     });
   }
