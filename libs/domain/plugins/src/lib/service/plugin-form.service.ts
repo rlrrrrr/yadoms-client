@@ -199,11 +199,20 @@ export const getNestedSectionFields = (
         });
         break;
       case PluginConfigurationSchemaType.Enum:
-        newInitialValues.push({
-          key: key,
-          path: `${parentKey}.${selectedKey}.content.${key}.value`,
-          field: field,
-        });
+        if (selectedKey === '') {
+          newInitialValues.push({
+            key: key,
+            path: `${parentKey}.content.${key}.value`,
+            field: field,
+          });
+        } else {
+          newInitialValues.push({
+            key: key,
+            path: `${parentKey}.${selectedKey}.content.${key}.value`,
+            field: field,
+          });
+        }
+
         break;
       case PluginConfigurationSchemaType.String:
         newInitialValues.push({
