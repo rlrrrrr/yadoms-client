@@ -37,6 +37,7 @@ export const getFromInitialValues = (
       case PluginConfigurationSchemaType.Boolean:
       case PluginConfigurationSchemaType.Decimal:
       case PluginConfigurationSchemaType.Enum:
+      case PluginConfigurationSchemaType.CustomTime:
         newInitialValues[key] = {
           ...field,
           value: field.defaultValue ?? field.value,
@@ -229,6 +230,13 @@ export const getNestedSectionFields = (
         });
         break;
       case PluginConfigurationSchemaType.Integer:
+        newInitialValues.push({
+          key: key,
+          path: `${parentKey}.content.${key}.value`,
+          field: field,
+        });
+        break;
+      case PluginConfigurationSchemaType.CustomTime:
         newInitialValues.push({
           key: key,
           path: `${parentKey}.content.${key}.value`,
