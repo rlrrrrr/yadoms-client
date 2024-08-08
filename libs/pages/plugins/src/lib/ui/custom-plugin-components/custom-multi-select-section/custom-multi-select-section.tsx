@@ -14,8 +14,8 @@ export interface CustomMultiSelectSectionProps {
 
 export function CustomMultiSelectSection(props: CustomMultiSelectSectionProps) {
   const renderMultiSelectOption: MultiSelectProps['renderOption'] = ({
-    option,
-  }) => (
+                                                                       option
+                                                                     }) => (
     <Group wrap="nowrap">
       <div>
         <Text>{props.field.content[option.value].name}</Text>
@@ -41,6 +41,12 @@ export function CustomMultiSelectSection(props: CustomMultiSelectSectionProps) {
         maxDropdownHeight={400}
         defaultValue={getMultiSelectDefaultValue(props.field)}
         hidePickedOptions
+        onOptionSubmit={(event) => {
+          props.form.setFieldValue(`${props.path}.content.${event}.value`, true);
+        }}
+        onRemove={(event) => {
+          props.form.setFieldValue(`${props.path}.content.${event}.value`, false);
+        }}
       />
     </Box>
   );
