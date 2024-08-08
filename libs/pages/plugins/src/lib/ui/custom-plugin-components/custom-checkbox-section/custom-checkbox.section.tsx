@@ -18,11 +18,10 @@ export interface CustomCheckboxSectionProps {
 
 export function CustomCheckboxSection(props: CustomCheckboxSectionProps) {
   const [checked, setChecked] = useState<boolean>(
-    getValueByPath(props.form.values, props.path)
+    getValueByPath(props.form.values, `${props.path}.checkbox`)
   );
-
   useEffect(() => {
-    const value = getValueByPath(props.form.values, props.path);
+    const value = getValueByPath(props.form.values, `${props.path}.checkbox`);
     setChecked(value);
   }, [props.form.values, props.path]);
 
@@ -31,23 +30,22 @@ export function CustomCheckboxSection(props: CustomCheckboxSectionProps) {
       <Checkbox
         label={props.field.name}
         description={<LinkifyText text={props.field.description} />}
-        key={props.form.key(props.path)}
-        {...props.form.getInputProps(`${props.path}.checkbox`, { type: 'checkbox' })}
+        key={props.form.key(`${props.path}.checkbox`)}
+        {...props.form.getInputProps(`${props.path}.checkbox`, {
+          type: 'checkbox',
+        })}
       />
 
       {checked && (
         <div>
-          {getNestedSectionFields(
-            props.field.content,
-            removeCheckboxFromParentPath(props.path),
-            ''
-          ).map(({ key, path, field }) =>
-            renderPluginField({
-              field: field,
-              form: props.form,
-              path: path,
-              pluginKey: key,
-            })
+          {getNestedSectionFields(props.field.content, props.path, '').map(
+            ({ key, path, field }) =>
+              renderPluginField({
+                field: field,
+                form: props.form,
+                path: path,
+                pluginKey: key,
+              })
           )}
         </div>
       )}
@@ -55,9 +53,6 @@ export function CustomCheckboxSection(props: CustomCheckboxSectionProps) {
   );
 }
 
-function removeCheckboxFromParentPath(input: string): string {
-  return input.replace('.checkbox', '');
-}
 function getValueByPath<T>(obj: T, path: string): any {
   return path.split('.').reduce((acc, part) => acc && acc[part], obj);
 }

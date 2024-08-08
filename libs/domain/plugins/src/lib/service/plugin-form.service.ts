@@ -125,7 +125,7 @@ export const getFromInitialValuesTest = (
       case PluginConfigurationSchemaType.CheckboxSection:
         newInitialValues.push({
           key: key,
-          path: `${path}.checkbox`,
+          path: `${path}`,
           field: field,
         });
         break;
