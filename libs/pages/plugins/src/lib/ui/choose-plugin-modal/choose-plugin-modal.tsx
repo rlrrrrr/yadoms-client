@@ -78,7 +78,7 @@ export function ChoosePluginModal(props: ChoosePluginModalProps) {
             </Badge>
           </Group>
 
-          <Text mt="xs" color="dimmed" size="sm" style={{ flex: '1 0 auto' }}>
+          <Text mt="xs" c="dimmed" size="sm" style={{ flex: '1 0 auto' }}>
             <LinkifyText
               text={availablePluginsEntity.description}
             ></LinkifyText>

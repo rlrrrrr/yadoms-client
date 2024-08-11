@@ -41,6 +41,12 @@ export function CreateNewPlugin(props: CreateNewPluginProps) {
     props.onClose();
   }
 
+  function closeAllModals() {
+    pluginConfigurationModalHandlers.close();
+    choosePluginModalHandlers.close();
+    props.onClose();
+  }
+
   return (
     <>
       <ChoosePluginModal
@@ -53,6 +59,7 @@ export function CreateNewPlugin(props: CreateNewPluginProps) {
         <PluginConfigurationModal
           opened={openedPluginConfigurationModal}
           onClose={() => closePluginConfigurationModal()}
+          onCloseAllModals={closeAllModals}
           selectedPluginType={selectedPluginType}
           selectedPluginConfigurationSchema={selectedPluginConfigurationSchema}
         />

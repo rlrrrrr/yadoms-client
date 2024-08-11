@@ -159,10 +159,6 @@ export const getNestedSectionFields = (
     field: PluginConfigurationSchemaField;
   }> = [];
   for (const [key, field] of Object.entries(configurationSchema)) {
-    console.log('field?.typ', field?.type);
-    console.log('parentKey', parentKey);
-    console.log('selectedKey', selectedKey);
-    console.log('key', key);
     switch (field?.type) {
       case PluginConfigurationSchemaType.CheckboxSection:
         newInitialValues.push({
@@ -251,6 +247,5 @@ export const getNestedSectionFields = (
         });
     }
   }
-  console.log('newInitialValue sections', newInitialValues);
   return newInitialValues;
 };

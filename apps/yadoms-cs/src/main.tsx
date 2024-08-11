@@ -1,5 +1,6 @@
 import '@mantine/core/styles.css';
 import '@mantine/dates/styles.css';
+import '@mantine/notifications/styles.css';
 import 'mantine-react-table/styles.css';
 import * as ReactDOM from 'react-dom/client';
 import App from './app/app';
