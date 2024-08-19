@@ -15,12 +15,13 @@ export interface CustomTimeProps {
 export function CustomTime(props: CustomTimeProps) {
   return (
     <TimeInput
+      {...props.form.getInputProps(props.path)}
+      key={props.form.key(props.path)}
       leftSection={<IconClock size="1rem" stroke={1.5} />}
       label={props.field.name}
       description={<LinkifyText text={props.field.description} />}
       required={props.field.required}
       withAsterisk={props.field.required}
-      defaultValue={props.field.defaultValue?.toString()}
     />
   );
 }

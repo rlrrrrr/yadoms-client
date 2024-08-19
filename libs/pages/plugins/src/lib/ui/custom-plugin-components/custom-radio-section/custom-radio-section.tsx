@@ -1,4 +1,7 @@
-import { RadioSectionField } from '@yadoms/domain/plugins';
+import {
+  getNestedSectionFields,
+  RadioSectionField,
+} from '@yadoms/domain/plugins';
 import { Box, Group, Radio } from '@mantine/core';
 import React, { useEffect, useState } from 'react';
 import LinkifyText from '../../linkify-text/linkify-text';
@@ -43,7 +46,7 @@ export function CustomRadioSection(props: CustomRadioSectionProps) {
       <Radio.Group
         value={selectedOption}
         onChange={(event) => {
-          console.log('event', event);
+          props.form.setFieldValue(`${props.path}.activeSection`, event);
           setSelectedOption(event);
         }}
         name={props.field.name}
@@ -55,13 +58,17 @@ export function CustomRadioSection(props: CustomRadioSectionProps) {
       </Radio.Group>
       {props.field.content[selectedOption] && (
         <div>
-          {Object.entries(props.field.content[selectedOption].content).map(
-            ([key, value]) =>
-              renderPluginField({
-                field: value,
-                form: props.form,
-                pluginKey: key,
-              })
+          {getNestedSectionFields(
+            props.field.content[selectedOption].content,
+            `${props.path}.content.${selectedOption}`,
+            ''
+          ).map(({ key, path, field }) =>
+            renderPluginField({
+              field: field,
+              form: props.form,
+              path: path,
+              pluginKey: key,
+            })
           )}
         </div>
       )}

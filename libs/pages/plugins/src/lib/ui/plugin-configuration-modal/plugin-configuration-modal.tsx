@@ -18,12 +18,14 @@ import {
   getInitialValues,
   PluginConfigurationSchema,
 } from '@yadoms/domain/plugins';
+import classes from './plugin-configuration-modal.module.css';
 
 export interface PluginConfigurationModalProps {
   opened: boolean;
   onClose: () => void;
   selectedPluginConfigurationSchema: PluginConfigurationSchema;
   selectedPluginType: string;
+  onCloseAllModals: () => void;
 }
 
 export interface ItemProps extends React.ComponentPropsWithoutRef<'div'> {
@@ -53,36 +55,19 @@ export function PluginConfigurationModal(props: PluginConfigurationModalProps) {
       })
     );
   }, [props.selectedPluginType, props.selectedPluginConfigurationSchema]);
-
   const form = useForm({
     initialValues,
-    validate: (values) =>
-      validateForm(values, props.selectedPluginConfigurationSchema),
+    validate: (values) => validateForm(values),
   });
 
-  const onSubmit = () => {
-    console.log('values on submit', form.values);
-    const errorValues = Object.values(form.errors);
-    if (errorValues.length === 0) {
-      // handle successful form submission
-      notifications.show({
-        title: 'Form submitted',
-        message: 'Your form has been submitted successfully.',
-        color: theme.colors.green[6],
-      });
-    } else {
-      // handle validation errors
-      notifications.show({
-        title: 'Validation error',
-        message: 'Please fix the errors in the form and try again.',
-        color: 'red',
-      });
-    }
+  const handleClose = () => {
+    form.reset();
+    props.onClose();
   };
 
   return (
     <Modal.Root
-      onClose={props.onClose}
+      onClose={handleClose}
       opened={props.opened}
       size="95%"
       zIndex={1000}
@@ -98,10 +83,34 @@ export function PluginConfigurationModal(props: PluginConfigurationModalProps) {
         </Modal.Header>
         <Modal.Body>
           <form
-            onSubmit={form.onSubmit((values) => {
-              console.log('form', form);
-              console.log(values);
-            })}
+            onSubmit={form.onSubmit(
+              (values, event) => {
+                console.log(
+                  values, // <- form.getValues() at the moment of submit
+                  event // <- form element submit event
+                );
+                notifications.show({
+                  title: 'Form submitted',
+                  message: 'Your form has been submitted successfully.',
+                  color: theme.colors.green[6],
+                  position: 'bottom-right',
+                });
+              },
+              (validationErrors, values, event) => {
+                form.validate();
+                console.log(
+                  'failed',
+                  validationErrors, // <- form.errors at the moment of submit
+                  values, // <- form.getValues() at the moment of submit
+                  event // <- form element submit event
+                );
+                notifications.show({
+                  title: 'Validation error',
+                  message: 'Please fix the errors in the form and try again.',
+                  color: 'red',
+                });
+              }
+            )}
           >
             <Flex direction={'column'} gap={10}>
               <TextInput
@@ -126,28 +135,18 @@ export function PluginConfigurationModal(props: PluginConfigurationModalProps) {
             </Flex>
 
             <Flex
+              className={classes.modalFooter}
               mih={50}
               gap="xs"
               justify="flex-end"
               align="center"
               direction="row"
               wrap="wrap"
-              sx={(theme) => ({
-                position: 'absolute',
-                bottom: 0,
-                left: 0,
-                right: 0,
-                backgroundColor:
-                  theme.colorScheme === 'dark'
-                    ? theme.colors.dark[5]
-                    : theme.colors.gray[1],
-                padding: '20px',
-              })}
             >
-              <Button onClick={props.onClose} variant={'outline'}>
+              <Button onClick={handleClose} variant={'outline'}>
                 {t('plugins.modal.plugin-configuration.back')}
               </Button>
-              <Button onClick={onSubmit} type="submit">
+              <Button type="submit" disabled={false}>
                 {t('plugins.modal.plugin-configuration.create')}
               </Button>
             </Flex>

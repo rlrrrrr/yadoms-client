@@ -14,25 +14,16 @@ export interface CustomTextInputProps {
 export function CustomIntegerInput(props: CustomTextInputProps) {
   return (
     <NumberInput
+      {...props.form.getInputProps(props.path)}
+      key={props.form.key(props.path)}
       label={props.field.name}
       description={<LinkifyText text={props.field.description} />}
       placeholder={props.field.name}
-      defaultValue={
-        isNumber(props.field.defaultValue)
-          ? props.field.defaultValue
-          : undefined
-      }
       inputWrapperOrder={['label', 'error', 'input', 'description']}
       withAsterisk={!!props.field.required}
       min={0}
     />
   );
-}
-
-function isNumber(
-  value: number | boolean | string | undefined
-): value is number {
-  return typeof value === 'number';
 }
 
 export default CustomIntegerInput;

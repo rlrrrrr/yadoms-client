@@ -11,7 +11,7 @@ import React, { useState } from 'react';
 import renderPluginField from '../../render-plugin-field/render-plugin-field';
 import {
   ComboSectionField,
-  getInitialValuesFromSectionFields,
+  getNestedSectionFields,
 } from '@yadoms/domain/plugins';
 import LinkifyText from '../../linkify-text/linkify-text';
 import { FormReturnType } from '../../FormReturnType';
@@ -78,6 +78,7 @@ export function CustomComboSection(props: CustomComboSectionProps) {
         onOptionSubmit={(val) => {
           setSelectedComboSection(val);
           setValue(val);
+          props.form.setFieldValue(`${props.path}.activeSection`, val);
           combobox.closeDropdown();
         }}
       >
@@ -109,15 +110,15 @@ export function CustomComboSection(props: CustomComboSectionProps) {
 
       {selectedComboSectionContent && (
         <div>
-          {getInitialValuesFromSectionFields(
+          {getNestedSectionFields(
             selectedComboSectionContent,
-            props.path,
+            `${props.path}.content`,
             selectedComboSection
           ).map(({ key, path, field }) =>
             renderPluginField({
               field: field,
               form: props.form,
-              path: path,
+              path: `${path}`,
               pluginKey: key,
             })
           )}

@@ -14,12 +14,9 @@ export interface CustomDecimalNumberProps {
 export function CustomDecimalNumber(props: CustomDecimalNumberProps) {
   return (
     <NumberInput
+      {...props.form.getInputProps(props.path)}
+      key={props.form.key(props.path)}
       label={props.field.name}
-      defaultValue={
-        isNumber(props.field.defaultValue)
-          ? props.field.defaultValue
-          : undefined
-      }
       description={<LinkifyText text={props.field.description} />}
       decimalScale={props.field.precision}
       step={props.field.step}
@@ -27,12 +24,6 @@ export function CustomDecimalNumber(props: CustomDecimalNumberProps) {
       withAsterisk
     />
   );
-}
-
-function isNumber(
-  value: number | boolean | string | undefined
-): value is number {
-  return typeof value === 'number';
 }
 
 export default CustomDecimalNumber;

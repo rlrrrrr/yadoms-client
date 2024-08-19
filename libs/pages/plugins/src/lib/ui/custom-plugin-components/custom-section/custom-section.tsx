@@ -1,8 +1,7 @@
-import { UseFormReturnType } from '@mantine/form';
 import { Box, Text } from '@mantine/core';
 import React from 'react';
 import renderPluginField from '../../render-plugin-field/render-plugin-field';
-import { SectionField } from '@yadoms/domain/plugins';
+import { getNestedSectionFields, SectionField } from '@yadoms/domain/plugins';
 import LinkifyText from '../../linkify-text/linkify-text';
 import { FormReturnType } from '../../FormReturnType';
 import classes from '../components.module.css';
@@ -19,19 +18,23 @@ export function CustomSection(props: CustomSectionProps) {
     <Box className={classes.box}>
       <div key={props.pluginKey}>
         <label>{props.field.name}</label>
-        <Text fz="xs" color="dark.2">
+        <Text fz="xs" c="dark.2">
           <LinkifyText text={props.field.description} />
         </Text>
         <div style={{ marginLeft: '10px' }}>
-          {props.field.content &&
-            Object.entries(props.field.content).map(([key, value]) =>
-              renderPluginField({
-                field: value,
-                form: props.form,
-                path: '',
-                pluginKey: key,
-              })
-            )}
+          {props.field.content && (
+            <div>
+              {getNestedSectionFields(props.field.content, props.path, '').map(
+                ({ key, path, field }) =>
+                  renderPluginField({
+                    field: field,
+                    form: props.form,
+                    path: path,
+                    pluginKey: key,
+                  })
+              )}
+            </div>
+          )}
         </div>
       </div>
     </Box>

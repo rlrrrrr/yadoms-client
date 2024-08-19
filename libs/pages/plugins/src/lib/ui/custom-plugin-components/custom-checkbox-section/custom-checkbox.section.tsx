@@ -1,6 +1,6 @@
 import {
   CheckboxSectionField,
-  getInitialValuesFromSectionFields,
+  getNestedSectionFields,
 } from '@yadoms/domain/plugins';
 import { Box, Checkbox } from '@mantine/core';
 import React, { useEffect, useState } from 'react';
@@ -17,36 +17,42 @@ export interface CustomCheckboxSectionProps {
 }
 
 export function CustomCheckboxSection(props: CustomCheckboxSectionProps) {
-  const CHECKBOX_PATH = `${props.path}.checkbox`;
-  const CHECKBOX_VALUE = props.form.getInputProps(CHECKBOX_PATH).value;
-
-  const [checked, setChecked] = useState<boolean>(!!props.field.defaultValue);
+  const [checked, setChecked] = useState<boolean>(
+    getValueByPath(props.form.values, `${props.path}.checkbox`)
+  );
+  useEffect(() => {
+    const value = getValueByPath(props.form.values, `${props.path}.checkbox`);
+    setChecked(value);
+  }, [props.form.values, props.path]);
 
   return (
     <Box className={classes.box}>
       <Checkbox
         label={props.field.name}
         description={<LinkifyText text={props.field.description} />}
-        checked={checked}
-        onChange={(event) => setChecked(event.currentTarget.checked)}
+        key={props.form.key(`${props.path}.checkbox`)}
+        {...props.form.getInputProps(`${props.path}.checkbox`, {
+          type: 'checkbox',
+        })}
       />
 
       {checked && (
         <div>
-          {getInitialValuesFromSectionFields(
-            props.field.content,
-            props.path,
-            ''
-          ).map(({ key, path, field }) =>
-            renderPluginField({
-              field: field,
-              form: props.form,
-              path: path,
-              pluginKey: key,
-            })
+          {getNestedSectionFields(props.field.content, props.path, '').map(
+            ({ key, path, field }) =>
+              renderPluginField({
+                field: field,
+                form: props.form,
+                path: path,
+                pluginKey: key,
+              })
           )}
         </div>
       )}
     </Box>
   );
+}
+
+function getValueByPath<T>(obj: T, path: string): any {
+  return path.split('.').reduce((acc, part) => acc && acc[part], obj);
 }

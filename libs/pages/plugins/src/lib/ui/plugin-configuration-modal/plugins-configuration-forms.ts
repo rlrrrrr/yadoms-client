@@ -1,32 +1,68 @@
-import { PluginConfigurationSchema } from '@yadoms/domain/plugins';
+import { PluginConfigurationSchemaType } from '@yadoms/domain/plugins';
 
-export const validateForm = (
-  values: Record<string, any>,
-  schema: PluginConfigurationSchema
-) => {
+export const validateForm: (
+  values: Record<string, any>
+) => Record<string, string> = (values: Record<string, any>) => {
   const errors: Record<string, string> = {};
-  const validateField = (key: string, value: any, field: any) => {
-    if (field.required && (!value || value.trim() === '')) {
-      errors[key] = `${field.name} is required`;
-    }
-    if (field.regex && !new RegExp(field.regex).test(value)) {
-      errors[key] = field.regexErrorMessage || `${field.name} is invalid`;
-    }
-  };
 
   const validateObject = (
-    obj: Record<string, any>,
-    schema: PluginConfigurationSchema
+    values: Record<string, any>,
+    path = 'configuration'
   ) => {
-    Object.entries(schema).forEach(([key, field]) => {
-      if (field.type === 'section') {
-        validateObject(obj[key] || {}, field.content || {});
-      } else {
-        validateField(key, obj[key], field);
+    Object.entries(values).forEach(([key, field]) => {
+      const currentPath = `${path}.${key}`;
+      console.log('key', key);
+      console.log('field', field);
+      console.log('field.type', field.type);
+
+      switch (field.type) {
+        case PluginConfigurationSchemaType.String:
+          if (field.required && field.value?.trim() === '') {
+            errors[`${currentPath}.value`] = `${field.name} is required`;
+          }
+          if (field.regex && !new RegExp(field.regex).test(field.value)) {
+            errors[`${currentPath}.value`] =
+              field.regexErrorMessage || `${field.name} is invalid`;
+          }
+          break;
+
+        case PluginConfigurationSchemaType.Integer:
+          if (
+            field.required &&
+            (field.value === null ||
+              field.value === undefined ||
+              field.value === '')
+          ) {
+            errors[`${currentPath}.value`] = `${field.name} is required`;
+          }
+          if (field.regex && !new RegExp(field.regex).test(field.value)) {
+            errors[`${currentPath}.value`] =
+              field.regexErrorMessage || `${field.name} is invalid`;
+          }
+          break;
+
+        case PluginConfigurationSchemaType.Decimal:
+          if (
+            field.value === null ||
+            field.value === undefined ||
+            field.value === ''
+          ) {
+            errors[`${currentPath}.value`] = `${field.name} is required`;
+          }
+          break;
+
+        case PluginConfigurationSchemaType.Section:
+          console.log('section currentPath', currentPath);
+          validateObject(field.content, `${currentPath}.content`);
+          break;
+        default:
+          break;
       }
     });
   };
 
-  validateObject(values, schema);
+  validateObject(values['configuration']);
+
+  console.log('errors', errors);
   return errors;
 };
