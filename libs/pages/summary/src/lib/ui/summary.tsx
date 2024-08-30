@@ -40,7 +40,7 @@ function formatDate(isoDate: string | undefined): string {
   }
 
   const year = parseInt(isoDate.slice(0, 4), 10);
-  const month = parseInt(isoDate.slice(4, 6), 10) - 1; // Les mois commencent à 0
+  const month = parseInt(isoDate.slice(4, 6), 10) - 1; 
   const day = parseInt(isoDate.slice(6, 8), 10);
   const hour = parseInt(isoDate.slice(9, 11), 10);
   const minute = parseInt(isoDate.slice(11, 13), 10);
