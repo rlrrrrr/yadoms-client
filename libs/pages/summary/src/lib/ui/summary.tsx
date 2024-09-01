@@ -1,46 +1,58 @@
-import {Box, Flex, Grid,LoadingOverlay, Paper, Title, Text, Center} from '@mantine/core';
+import { Box, Flex, Grid, LoadingOverlay, Paper, Title, Text, Center, Badge } from '@mantine/core';
 import { useTranslation } from 'react-i18next';
 import { BreadCrumbs } from '@yadoms/shared';
 import { loadSystemInformations } from '../summary-api';
 import { useQuery } from '@tanstack/react-query';
-import { SiSqlite, SiPostgresql, SiMysql, SiMongodb, SiRedis} from "react-icons/si";
-import { DiWindows, DiLinux, DiApple, DiDatabase} from "react-icons/di";
-import { ReactNode } from 'react';
-import {GrDatabase } from "react-icons/gr";
-import { MdOutlineNewReleases,MdElectricBolt } from "react-icons/md";
-import { IoResize } from "react-icons/io5";
-import { TbTimeDurationOff } from "react-icons/tb";
-import { GrSystem } from "react-icons/gr";
-import {  Container} from '@mantine/core';
+import React, { ReactNode } from 'react';
+import { Container } from '@mantine/core';
+import semver from 'semver/preload';
+import classes from './summary.module.css';
+import {
+  DatabaseIcon, DatabaseVersionIcon,
+  LinuxLogo,
+  MacOSLogo,
+  PostgreSQLLogo, PowerIcon,
+  SQLIcon,
+  SQLiteLogo,
+  SystemIcon, VersionIcon,
+  WindowsLogo,
+  SizeIcon
+} from './icons';
 
 
-export function Card({icon,label, content}:{icon: ReactNode, label:string, content: string | number | undefined}){
-    return (
-  <Grid.Col span={4}>
 
-          <Paper withBorder shadow="md" p="md">
-            <Center>
-              {icon}
-            </Center>
-            <Text  mt="md">
-              {label}
-            </Text>
-            <Text  size="sm">
-              {content}
-            </Text>
-          </Paper>
-        </Grid.Col>
-  )
+const customization = {
+  Window: {color: "#4057dc", size:40},
+  Linux:{color: "#6f706e", size:40},
+  MacOs:{color: "#000000", size:40},
+  DefaultOs:{color: "#6e6e70", size:40},
+  SqLite:{color: "#66b2fc", size:40},
+  Postgres:{color: "#3177ff", size:40},
+  Database:{color: "#f14809", size:40},
+  DatabaseVersion: {color: "#cec483", size:40},
+  Power: {color: "#00ff28" ,size:40},
+  Version: {color: "#873be1", size:40},
+  Size: {color: "#e52121", size:40},
+  SQL: {color: "#0048fd", size:40},
+
+
+
+}
+export function isVersion(version: string) : boolean {
+  return semver.valid(version) != null;
 }
 
-function formatDate(isoDate: string | undefined): string {
 
-  if(!isoDate){
-    return ""
+
+function formatDate(isoDate: string | undefined): string {
+  const {i18n } = useTranslation();
+  const locale = i18n.language;
+  if (!isoDate) {
+    return '';
   }
 
   const year = parseInt(isoDate.slice(0, 4), 10);
-  const month = parseInt(isoDate.slice(4, 6), 10) - 1; 
+  const month = parseInt(isoDate.slice(4, 6), 10) - 1;
   const day = parseInt(isoDate.slice(6, 8), 10);
   const hour = parseInt(isoDate.slice(9, 11), 10);
   const minute = parseInt(isoDate.slice(11, 13), 10);
@@ -54,32 +66,87 @@ function formatDate(isoDate: string | undefined): string {
     hour: 'numeric', minute: 'numeric', second: 'numeric',
   };
 
-  return date.toLocaleDateString('fr-FR', options);
+  return date.toLocaleDateString(locale, options);
 
 }
 
-
-export function FeaturesGrid({systemInformations}:{systemInformations:SystemInformation[]}) {
-  const { t } = useTranslation();
+export function Card({ icon, label, content, color}: {
+  icon: ReactNode,
+  label: string,
+  content: string | number | undefined
+  color:string
+}) {
   return (
-    <Container size="lg" py="xl">
-      <Grid gutter="lg">
-        {systemInformations.map((element) => (
-          <Card icon={element.icon} label={t(`summary.informations.${element.i18nKey}`)} content={element.dataKey} key={element.dataKey}></Card>
-        ))}
-      </Grid>
-    </Container>
+    <Paper mih={150} mah={200} p={'xs'} withBorder className={classes.item} styles={(theme) => ({
+      root: {
+        boxShadow: `0px 0px 20px ${color}`,
+        border: `1px solid ${color}`
+      },
+    })}>
+      <Center>
+        {icon}
+      </Center>
+      <Text
+        weight={500}
+        size={{base: 'xs', sm: 'lg' }}
+      >
+        {label}
+      </Text>
+      {isVersion(content) ? (
+        <Badge color="pink" variant="light" mt="md">
+          <Text
+            size={{base: 'xs', sm: 'lg' }}
+          >
+            {content}
+          </Text>
+        </Badge>
+      ) : (
+        <Text
+          size={{base: 'xs', sm: 'lg' }}
+        >
+          {
+            Number.isInteger(content) ? `${content} Octets` : content
+          }
+        </Text>
+      )}
+    </Paper>
   );
 }
+
+export function FeaturesGrid({ systemInformations }: { systemInformations: SystemInformation[] }) {
+  const { t } = useTranslation();
+  return (
+    <div >
+      <Container fluid >
+      <Flex direction={{ base: 'column', sm: 'row' }} justify={{ sm: 'center' }} gap={{ base: 'xs', sm: 'lg' }}  mih={150} miw={150} mah={150}>
+        <Grid gutter="lg">
+          {systemInformations.map((element) => (
+            <Grid.Col span={4}
+                      xs={12}
+                      sm={6}
+                      md={4}
+                      lg={3} >
+              <Card icon={element.icon} label={t(`summary.informations.${element.i18nKey}`)}
+                    content={element.dataKey} color={element.color} ></Card>
+            </Grid.Col>
+          ))}
+        </Grid>
+      </Flex>
+      </Container>
+    </div>
+  );
+}
+
 
 type SystemInformation = {
   i18nKey: string;
   dataKey: string | number | undefined;
   icon: ReactNode;
+  color: string
 };
 
 export function Summary() {
-  
+
   const { t } = useTranslation();
   const { isLoading, data } = useQuery({
     queryKey: ['system-informations'],
@@ -92,47 +159,62 @@ export function Summary() {
   ];
 
   const getPlatformIcon = (platform: string | undefined) => {
-    if (!platform) return <GrSystem />;
-  
+    if (!platform) return <SystemIcon size={customization.DefaultOs.size} color={customization.DefaultOs.color} />;;
+
     if (platform.startsWith('Windows')) {
-      return <DiWindows size={40}/>;
+      return <WindowsLogo size={customization.Window.size} color={customization.Window.color} />;
     } else if (platform.startsWith('Linux')) {
-      return <DiLinux size={40}/>;
+      return <LinuxLogo size={customization.Linux.size} color={customization.Linux.color} />;
     } else if (platform.startsWith('MacOs')) {
-      return <DiApple size={40}/>;
+      return <MacOSLogo size={customization.MacOs.size} color={customization.MacOs.color} />;
     } else {
-      return <GrSystem size={40}/>;
+      return <SystemIcon size={customization.DefaultOs.size} color={customization.DefaultOs.color} />;
     }
   };
-  
-  
+
+
   const getDatabaseEngineIcon = (engine: string | undefined) => {
     switch (engine) {
       case 'SQLite':
-        return <SiSqlite size={40}/>;
+        return <SQLiteLogo size={customization.SqLite.size} color={customization.SqLite.color} />;
       case 'Postgres':
-        return <SiPostgresql size={40}/>;
+        return <PostgreSQLLogo size={customization.Postgres.size} color={customization.Postgres.color} />;
       default:
-        return <DiDatabase size={40}/>;
+        return <SQLIcon size={customization.SQL.color} color={customization.SQL.color}/>;
     }
   };
-  
 
-  
+
   const systemInformations = [
-    { i18nKey: 'platform', dataKey: data?.platform, icon: getPlatformIcon(data?.platform)},
-    { i18nKey: 'software-version', dataKey: data?.yadomsVersion, icon: <MdOutlineNewReleases size={40}/>}, 
-    { i18nKey: 'database-version', dataKey: data?.database.version, icon: <GrDatabase size={40} /> },
-    { i18nKey: 'started-from', dataKey: formatDate(data?.startupTime), icon:<MdElectricBolt size={40}/> }, 
-    { i18nKey: 'database-engine', dataKey: data?.databaseEngine.type, icon: getDatabaseEngineIcon(data?.databaseEngine.type) },
+    { i18nKey: 'platform', dataKey: data?.platform, icon: getPlatformIcon(data?.platform), color: customization.DefaultOs.color},
+    { i18nKey: 'software-version', dataKey: data?.yadomsVersion, icon: <VersionIcon size={40} color={customization.Version.color} />, color: customization.Version.color },
+    {
+      i18nKey: 'database-version',
+      dataKey: data?.database.version,
+      icon: <DatabaseVersionIcon size={customization.DatabaseVersion.size} color={customization.DatabaseVersion.color} />,
+      color: customization.DatabaseVersion.color
+    },
+    {
+      i18nKey: 'started-from',
+      dataKey: formatDate(data?.startupTime),
+      icon: <PowerIcon size={customization.Power.size} color={customization.Power.color} />,
+      color: customization.Power.color
+    },
+    {
+      i18nKey: 'database-engine',
+      dataKey: data?.databaseEngine.type,
+      icon: getDatabaseEngineIcon(data?.databaseEngine.type),
+      color: customization.SQL.color
+    },
     {
       i18nKey: 'version-database-engine',
       dataKey: data?.databaseEngine.version,
-      icon: <TbTimeDurationOff size={40}/>
+      icon: <DatabaseIcon size={customization.Database.size} color={customization.Database.color} />,
+      color: customization.Database.color
     },
-    { i18nKey: 'database-size', dataKey: data?.database.size, icon: <IoResize size={40} /> },
+    { i18nKey: 'database-size', dataKey: data?.database.size, icon: <SizeIcon size={customization.Size.size} color={customization.Size.color} />, color: customization.Size.color},
   ];
-  
+
   return (
     <Flex direction={'column'}>
       <BreadCrumbs breadcrumbsItems={breadcrumbsItem} />
@@ -144,14 +226,12 @@ export function Summary() {
           visible={isLoading}
           overlayProps={{ radius: 'sm', blur: 2 }}
         />
-        <Paper shadow="xs" p="md">
           <FeaturesGrid systemInformations={systemInformations}></FeaturesGrid>
-        </Paper>
       </Box>
     </Flex>
   );
-  
+
 }
-  
+
 
 export default Summary;
