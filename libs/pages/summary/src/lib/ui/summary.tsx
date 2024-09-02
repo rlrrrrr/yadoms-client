@@ -79,7 +79,7 @@ export function Card({ icon, label, content, color, isLoading, children }: {
   children: ReactNode
 }) {
   return (
-    <Paper mih={150} p={'xs'} withBorder className={classes.item} styles={(theme) => ({
+    <Container mih={150} p={'xs'}  withBorder className={classes.item} styles={(theme) => ({
       root: {
         boxShadow: `0px 0px 20px ${color}`,
         border: `1px solid ${color}`
@@ -107,7 +107,7 @@ export function Card({ icon, label, content, color, isLoading, children }: {
           {Number.isInteger(content) ? `${content} Octets` : content}
         </Text>
       )}
-    </Paper>
+    </Container>
   );
 }
 
