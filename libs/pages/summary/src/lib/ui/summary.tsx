@@ -1,4 +1,4 @@
-import { Box, Flex, Grid, LoadingOverlay, Paper, Title, Text, Center, Badge } from '@mantine/core';
+import { Box, Flex, Grid, LoadingOverlay, Paper, Title, Text, Center, Badge, Skeleton } from '@mantine/core';
 import { useTranslation } from 'react-i18next';
 import { BreadCrumbs } from '@yadoms/shared';
 import { loadSystemInformations } from '../summary-api';
@@ -70,14 +70,16 @@ function formatDate(isoDate: string | undefined): string {
 
 }
 
-export function Card({ icon, label, content, color}: {
+export function Card({ icon, label, content, color, isLoading, children }: {
   icon: ReactNode,
   label: string,
-  content: string | number | undefined
-  color:string
+  content: string | number | undefined,
+  color: string,
+  isLoading: boolean,
+  children: ReactNode
 }) {
   return (
-    <Paper mih={150}  p={'xs'} withBorder className={classes.item} styles={(theme) => ({
+    <Paper mih={150} p={'xs'} withBorder className={classes.item} styles={(theme) => ({
       root: {
         boxShadow: `0px 0px 20px ${color}`,
         border: `1px solid ${color}`
@@ -88,35 +90,30 @@ export function Card({ icon, label, content, color}: {
       </Center>
       <Text
         weight={500}
-        size={{base: 'xs', sm: 'lg' }}
+        size={{ base: 'xs', sm: 'lg' }}
       >
         {label}
       </Text>
-      {isVersion(content) ? (
+      {isLoading ? (
+        <Skeleton height={20} mt="md" width="80%" radius="sm" />
+      ) : isVersion(content) ? (
         <Badge color="pink" variant="light" mt="md">
-          <Text
-            size={{base: 'xs', sm: 'lg' }}
-          >
+          <Text size={{ base: 'xs', sm: 'lg' }}>
             {content}
           </Text>
         </Badge>
       ) : (
-        <Text
-          size={{base: 'xs', sm: 'lg' }}
-        >
-          {
-            Number.isInteger(content) ? `${content} Octets` : content
-          }
+        <Text size={{ base: 'xs', sm: 'lg' }}>
+          {Number.isInteger(content) ? `${content} Octets` : content}
         </Text>
       )}
     </Paper>
   );
 }
 
-export function FeaturesGrid({ systemInformations }: { systemInformations: SystemInformation[] }) {
+export function FeaturesGrid({ systemInformations, children, isLoading }: { systemInformations: SystemInformation[], children: ReactNode, isLoading:boolean }) {
   const { t } = useTranslation();
   return (
-    <div >
       <Container fluid >
       <Flex direction={{ base: 'column', sm: 'row' }} justify={{ sm: 'center' }} gap={{ base: 'xs', sm: 'lg' }}  mih={150} miw={150} mah={150}>
         <Grid gutter="lg">
@@ -127,13 +124,12 @@ export function FeaturesGrid({ systemInformations }: { systemInformations: Syste
                       md={4}
                       lg={3} >
               <Card icon={element.icon} label={t(`summary.informations.${element.i18nKey}`)}
-                    content={element.dataKey} color={element.color} ></Card>
+                    content={element.dataKey} color={element.color} children={children} isLoading={isLoading} ></Card>
             </Grid.Col>
           ))}
         </Grid>
       </Flex>
       </Container>
-    </div>
   );
 }
 
@@ -180,7 +176,7 @@ export function Summary() {
       case 'Postgres':
         return <PostgreSQLLogo size={customization.Postgres.size} color={customization.Postgres.color} />;
       default:
-        return <SQLIcon size={customization.SQL.color} color={customization.SQL.color}/>;
+        return <SQLIcon size={customization.SQL.size} color={customization.SQL.color}/>;
     }
   };
 
@@ -221,12 +217,11 @@ export function Summary() {
       <Title order={3} size="h3" mt="md">
         {t('summary.home.description')}
       </Title>
-      <Box maw={'100%'} pos="relative" pt={'20px'}>
-        <LoadingOverlay
-          visible={isLoading}
-          overlayProps={{ radius: 'sm', blur: 2 }}
-        />
-          <FeaturesGrid systemInformations={systemInformations}></FeaturesGrid>
+      <Box maw={'100%'} pos="relative" pt={'20px'} >
+          <FeaturesGrid systemInformations={systemInformations} isLoading={isLoading}>
+            <Skeleton
+            visible={isLoading} />
+          </FeaturesGrid>
       </Box>
     </Flex>
   );
