@@ -79,7 +79,7 @@ export function Card({ icon, label, content, color, isLoading, children }: {
   children: ReactNode
 }) {
   return (
-    <Container mih={150} p={'xs'}  withBorder className={classes.item} styles={(theme) => ({
+    <Container mih={100}  p={'xl'} withBorder className={classes.item} styles={(theme) => ({
       root: {
         boxShadow: `0px 0px 20px ${color}`,
         border: `1px solid ${color}`
@@ -97,7 +97,7 @@ export function Card({ icon, label, content, color, isLoading, children }: {
       {isLoading ? (
         <Skeleton height={20} mt="md" width="80%" radius="sm" />
       ) : isVersion(content) ? (
-        <Badge color="pink" variant="light" mt="md">
+        <Badge color="pink" variant="light" mt={10}>
           <Text size={{ base: 'xs', sm: 'lg' }}>
             {content}
           </Text>
@@ -114,21 +114,15 @@ export function Card({ icon, label, content, color, isLoading, children }: {
 export function FeaturesGrid({ systemInformations, children, isLoading }: { systemInformations: SystemInformation[], children: ReactNode, isLoading:boolean }) {
   const { t } = useTranslation();
   return (
-      <Container fluid >
-      <Flex direction={{ base: 'column', sm: 'row' }} justify={{ sm: 'center' }} gap={{ base: 'xs', sm: 'lg' }}  mih={150} miw={150} mah={150}>
-        <Grid gutter="lg">
+      <Container size={1100} >
+        <Grid gutter="xl">
           {systemInformations.map((element) => (
-            <Grid.Col span={4}
-                      xs={12}
-                      sm={6}
-                      md={4}
-                      lg={3} >
+            <Grid.Col span={{ base: 12,sm:4, md: 4, lg: 4 }}>
               <Card icon={element.icon} label={t(`summary.informations.${element.i18nKey}`)}
                     content={element.dataKey} color={element.color} children={children} isLoading={isLoading} ></Card>
             </Grid.Col>
           ))}
         </Grid>
-      </Flex>
       </Container>
   );
 }
