@@ -77,7 +77,7 @@ export function Card({ icon, label, content, color}: {
   color:string
 }) {
   return (
-    <Paper mih={150} mah={200} p={'xs'} withBorder className={classes.item} styles={(theme) => ({
+    <Paper mih={150}  p={'xs'} withBorder className={classes.item} styles={(theme) => ({
       root: {
         boxShadow: `0px 0px 20px ${color}`,
         border: `1px solid ${color}`
