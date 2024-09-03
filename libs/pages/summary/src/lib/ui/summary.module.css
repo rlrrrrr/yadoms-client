@@ -2,9 +2,7 @@
   height: 100%;
   width: 100%;
 
-  transition:
-    box-shadow 150ms ease,
-    transform 100ms ease;
+  transition: box-shadow 150ms ease, transform 100ms ease;
   overflow: clip;
   @mixin hover {
     box-shadow: var(--mantine-shadow-md);
@@ -18,6 +16,3 @@
     flex-direction: column;
   }
 }
-
-
-
