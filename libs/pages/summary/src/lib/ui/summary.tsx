@@ -1,12 +1,9 @@
-import { Box, Flex, Grid, LoadingOverlay, Paper, Title, Text, Center, Badge, Skeleton } from '@mantine/core';
+import { Box, Flex, Title, Skeleton} from '@mantine/core';
 import { useTranslation } from 'react-i18next';
 import { BreadCrumbs } from '@yadoms/shared';
 import { loadSystemInformations } from '../summary-api';
 import { useQuery } from '@tanstack/react-query';
 import React, { ReactNode } from 'react';
-import { Container } from '@mantine/core';
-import semver from 'semver/preload';
-import classes from './summary.module.css';
 import {
   DatabaseIcon, DatabaseVersionIcon,
   LinuxLogo,
@@ -18,10 +15,10 @@ import {
   WindowsLogo,
   SizeIcon
 } from './icons';
+import {FormatDate} from "@yadoms/shared";
+import { FeaturesGrid } from './FeatureGridComponent';
 
-
-
-const customization = {
+const CUSTOMIZATIONS = {
   Window: {color: "#4057dc", size:40},
   Linux:{color: "#6f706e", size:40},
   MacOs:{color: "#000000", size:40},
@@ -34,101 +31,11 @@ const customization = {
   Version: {color: "#873be1", size:40},
   Size: {color: "#e52121", size:40},
   SQL: {color: "#0048fd", size:40},
+} as const;
 
+type CUSTOMIZATIONS = typeof CUSTOMIZATIONS[keyof typeof CUSTOMIZATIONS]
 
-
-}
-export function isVersion(version: string) : boolean {
-  return semver.valid(version) != null;
-}
-
-
-
-function formatDate(isoDate: string | undefined): string {
-  const {i18n } = useTranslation();
-  const locale = i18n.language;
-  if (!isoDate) {
-    return '';
-  }
-
-  const year = parseInt(isoDate.slice(0, 4), 10);
-  const month = parseInt(isoDate.slice(4, 6), 10) - 1;
-  const day = parseInt(isoDate.slice(6, 8), 10);
-  const hour = parseInt(isoDate.slice(9, 11), 10);
-  const minute = parseInt(isoDate.slice(11, 13), 10);
-  const second = parseInt(isoDate.slice(13, 15), 10);
-  const millisecond = Math.round(parseFloat("0." + isoDate.split('.')[1]) * 1000);
-
-  const date = new Date(year, month, day, hour, minute, second, millisecond);
-
-  const options: Intl.DateTimeFormatOptions = {
-    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
-    hour: 'numeric', minute: 'numeric', second: 'numeric',
-  };
-
-  return date.toLocaleDateString(locale, options);
-
-}
-
-export function Card({ icon, label, content, color, isLoading, children }: {
-  icon: ReactNode,
-  label: string,
-  content: string | number | undefined,
-  color: string,
-  isLoading: boolean,
-  children: ReactNode
-}) {
-  return (
-    <Container mih={100}  p={'xl'} withBorder className={classes.item} styles={(theme) => ({
-      root: {
-        boxShadow: `0px 0px 20px ${color}`,
-        border: `1px solid ${color}`
-      },
-    })}>
-      <Center>
-        {icon}
-      </Center>
-      <Text
-        weight={500}
-        size={{ base: 'xs', sm: 'lg' }}
-      >
-        {label}
-      </Text>
-      {isLoading ? (
-        <Skeleton height={20} mt="md" width="80%" radius="sm" />
-      ) : isVersion(content) ? (
-        <Badge color="pink" variant="light" mt={10}>
-          <Text size={{ base: 'xs', sm: 'lg' }}>
-            {content}
-          </Text>
-        </Badge>
-      ) : (
-        <Text size={{ base: 'xs', sm: 'lg' }}>
-          {Number.isInteger(content) ? `${content} Octets` : content}
-        </Text>
-      )}
-    </Container>
-  );
-}
-
-export function FeaturesGrid({ systemInformations, children, isLoading }: { systemInformations: SystemInformation[], children: ReactNode, isLoading:boolean }) {
-  const { t } = useTranslation();
-  return (
-      <Container size={1100} >
-        <Grid gutter="xl">
-          {systemInformations.map((element) => (
-            <Grid.Col span={{ base: 12,sm:4, md: 4, lg: 4 }}>
-              <Card icon={element.icon} label={t(`summary.informations.${element.i18nKey}`)}
-                    content={element.dataKey} color={element.color} children={children} isLoading={isLoading} ></Card>
-            </Grid.Col>
-          ))}
-        </Grid>
-      </Container>
-  );
-}
-
-
-type SystemInformation = {
+export type SystemInformation = {
   i18nKey: string;
   dataKey: string | number | undefined;
   icon: ReactNode;
@@ -136,75 +43,65 @@ type SystemInformation = {
 };
 
 export function Summary() {
-
   const { t } = useTranslation();
   const { isLoading, data } = useQuery({
     queryKey: ['system-informations'],
     queryFn: loadSystemInformations,
   });
-
   const breadcrumbsItem = [
     { title: 'home', href: '/' },
     { title: 'summary', href: '/summary' },
   ];
-
-  const getPlatformIcon = (platform: string | undefined) => {
-    if (!platform) return <SystemIcon size={customization.DefaultOs.size} color={customization.DefaultOs.color} />;;
-
-    if (platform.startsWith('Windows')) {
-      return <WindowsLogo size={customization.Window.size} color={customization.Window.color} />;
-    } else if (platform.startsWith('Linux')) {
-      return <LinuxLogo size={customization.Linux.size} color={customization.Linux.color} />;
-    } else if (platform.startsWith('MacOs')) {
-      return <MacOSLogo size={customization.MacOs.size} color={customization.MacOs.color} />;
-    } else {
-      return <SystemIcon size={customization.DefaultOs.size} color={customization.DefaultOs.color} />;
+  const getPlatformIcon = ( platform: string | undefined) => {
+    if(!platform) return <SystemIcon size={CUSTOMIZATIONS.DefaultOs.size} color={CUSTOMIZATIONS.DefaultOs.color} />; // prevent undefined | null case
+    switch (platform){
+      case platform.startsWith("Windows"): return <WindowsLogo size={CUSTOMIZATIONS.Window.size} color={CUSTOMIZATIONS.Window.color} />;
+      case platform.startsWith('Linux'): return <LinuxLogo size={CUSTOMIZATIONS.Linux.size} color={CUSTOMIZATIONS.Linux.color} />;
+      case platform.startsWith('MacOs'): return <MacOSLogo size={CUSTOMIZATIONS.MacOs.size} color={CUSTOMIZATIONS.MacOs.color} />;
+      default: return <SystemIcon size={CUSTOMIZATIONS.DefaultOs.size} color={CUSTOMIZATIONS.DefaultOs.color} />; // if I don't know platform
     }
-  };
-
-
+  }
   const getDatabaseEngineIcon = (engine: string | undefined) => {
+    if(!engine) return <SQLIcon size={CUSTOMIZATIONS.SQL.size} color={CUSTOMIZATIONS.SQL.color}/>;
     switch (engine) {
       case 'SQLite':
-        return <SQLiteLogo size={customization.SqLite.size} color={customization.SqLite.color} />;
+        return <SQLiteLogo size={CUSTOMIZATIONS.SqLite.size} color={CUSTOMIZATIONS.SqLite.color} />;
       case 'Postgres':
-        return <PostgreSQLLogo size={customization.Postgres.size} color={customization.Postgres.color} />;
+        return <PostgreSQLLogo size={CUSTOMIZATIONS.Postgres.size} color={CUSTOMIZATIONS.Postgres.color} />;
       default:
-        return <SQLIcon size={customization.SQL.size} color={customization.SQL.color}/>;
+        return <SQLIcon size={CUSTOMIZATIONS.SQL.size} color={CUSTOMIZATIONS.SQL.color}/>;
     }
   };
 
-
-  const systemInformations = [
-    { i18nKey: 'platform', dataKey: data?.platform, icon: getPlatformIcon(data?.platform), color: customization.DefaultOs.color},
-    { i18nKey: 'software-version', dataKey: data?.yadomsVersion, icon: <VersionIcon size={40} color={customization.Version.color} />, color: customization.Version.color },
+  const systemInformations: SystemInformation[] = [
+    { i18nKey: 'platform', dataKey: data?.platform, icon: getPlatformIcon(data?.platform), color: CUSTOMIZATIONS.DefaultOs.color},
+    { i18nKey: 'software-version', dataKey: data?.yadomsVersion, icon: <VersionIcon size={40} color={CUSTOMIZATIONS.Version.color} />, color: CUSTOMIZATIONS.Version.color },
     {
       i18nKey: 'database-version',
       dataKey: data?.database.version,
-      icon: <DatabaseVersionIcon size={customization.DatabaseVersion.size} color={customization.DatabaseVersion.color} />,
-      color: customization.DatabaseVersion.color
+      icon: <DatabaseVersionIcon size={CUSTOMIZATIONS.DatabaseVersion.size} color={CUSTOMIZATIONS.DatabaseVersion.color} />,
+      color: CUSTOMIZATIONS.DatabaseVersion.color
     },
     {
       i18nKey: 'started-from',
-      dataKey: formatDate(data?.startupTime),
-      icon: <PowerIcon size={customization.Power.size} color={customization.Power.color} />,
-      color: customization.Power.color
+      dataKey: FormatDate(data?.startupTime),
+      icon: <PowerIcon size={CUSTOMIZATIONS.Power.size} color={CUSTOMIZATIONS.Power.color} />,
+      color: CUSTOMIZATIONS.Power.color
     },
     {
       i18nKey: 'database-engine',
       dataKey: data?.databaseEngine.type,
       icon: getDatabaseEngineIcon(data?.databaseEngine.type),
-      color: customization.SQL.color
+      color: CUSTOMIZATIONS.SQL.color
     },
     {
       i18nKey: 'version-database-engine',
       dataKey: data?.databaseEngine.version,
-      icon: <DatabaseIcon size={customization.Database.size} color={customization.Database.color} />,
-      color: customization.Database.color
+      icon: <DatabaseIcon size={CUSTOMIZATIONS.Database.size} color={CUSTOMIZATIONS.Database.color} />,
+      color: CUSTOMIZATIONS.Database.color
     },
-    { i18nKey: 'database-size', dataKey: data?.database.size, icon: <SizeIcon size={customization.Size.size} color={customization.Size.color} />, color: customization.Size.color},
+    { i18nKey: 'database-size', dataKey: data?.database.size, icon: <SizeIcon size={CUSTOMIZATIONS.Size.size} color={CUSTOMIZATIONS.Size.color} />, color: CUSTOMIZATIONS.Size.color},
   ];
-
   return (
     <Flex direction={'column'}>
       <BreadCrumbs breadcrumbsItems={breadcrumbsItem} />
@@ -212,15 +109,15 @@ export function Summary() {
         {t('summary.home.description')}
       </Title>
       <Box maw={'100%'} pos="relative" pt={'20px'} >
-          <FeaturesGrid systemInformations={systemInformations} isLoading={isLoading}>
+          <FeaturesGrid systemInformations={systemInformations} isLoading={isLoading} >
             <Skeleton
-            visible={isLoading} />
+            visible={isLoading}
+            height={20} mt="md" width="80%" radius="sm" />
           </FeaturesGrid>
       </Box>
     </Flex>
   );
 
 }
-
 
 export default Summary;
